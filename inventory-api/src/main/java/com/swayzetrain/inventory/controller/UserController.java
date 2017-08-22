@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.swayzetrain.inventory.auth.PasswordDecoder;
 import com.swayzetrain.inventory.auth.PasswordEncoder;
+import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.model.User;
 import com.swayzetrain.inventory.repository.UserRepository;
 
@@ -27,19 +28,21 @@ public class UserController {
 	public ResponseEntity<?> authenticateUser(@RequestHeader(value = "username") String username, @RequestHeader(value = "password") String password) {
 		
 		User user = userRepository.findByUsername(username);
+		MessageResponse messageResponse = new MessageResponse();
 		
 		if (null == user) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user does not exist");
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("user does not exist"));
 		}
 		
 		PasswordDecoder passwordDecoder = new PasswordDecoder();
 		boolean passwordMatch = passwordDecoder.decodePassword(password, user.getPassword());
 		
 		if(!passwordMatch) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("invalid username or password");
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(messageResponse.MessageResponseBuilder("invalid username or password"));
 		}
 		
-		return ResponseEntity.status(HttpStatus.OK).body("user authentication successful");
+		return ResponseEntity.status(HttpStatus.OK).body(messageResponse.MessageResponseBuilder("user authentication successful"));
+		
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
