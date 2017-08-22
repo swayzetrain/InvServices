@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.swayzetrain.inventory.model.Item;
 import com.swayzetrain.inventory.model.ItemDeleteResponse;
+import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.repository.ItemRepository;
 
 @RestController
@@ -113,12 +114,14 @@ public class ItemController {
 	
 	@RequestMapping(value = "/id/{itemId}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @RequestBody Item item) {
-				
+		
 		Item oldItem = itemRepository.findByItemid(itemId);
 		
 		if (null == oldItem) {
 			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("item does not exist");
+			MessageResponse messageResponse = new MessageResponse();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("item does not exist"));
 			
 		}
 		

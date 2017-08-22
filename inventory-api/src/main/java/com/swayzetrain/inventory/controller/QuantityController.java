@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.model.Quantity;
 import com.swayzetrain.inventory.repository.QuantityRepository;
 
@@ -42,11 +43,14 @@ public class QuantityController {
 	
 	@RequestMapping(value = "/id/{quantityId}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateQuantityByQuantityId(@PathVariable(value = "quantityId") Integer quantityId, @RequestBody Quantity quantity) {
-		
+				
 		Quantity oldQuantity = quantityRepository.findByQuantityid(quantityId);
 		
 		if (null == oldQuantity) {
-			return ResponseEntity.status(HttpStatus.OK).body("quantity does not exist");
+			
+			MessageResponse messageResponse = new MessageResponse();
+			
+			return ResponseEntity.status(HttpStatus.OK).body(messageResponse.MessageResponseBuilder("quantity does not exist"));
 		}
 		
 		quantity.setQuantityid(quantityId);
@@ -65,7 +69,9 @@ public class QuantityController {
 		
 		if (null == oldQuantity) {
 			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("quantity does not exist");
+			MessageResponse messageResponse = new MessageResponse();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("quantity does not exist"));
 			
 		}
 		

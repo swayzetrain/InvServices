@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.swayzetrain.inventory.model.Category;
 import com.swayzetrain.inventory.model.CategoryDeleteResponse;
+import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.repository.CategoryRepository;
 
 @RestController
@@ -86,11 +87,14 @@ public class CategoryController {
 	@RequestMapping(value = "/id/{categoryId}", method = RequestMethod.PUT)
 	public ResponseEntity<?> updateCategoryById(@PathVariable(value = "categoryId") Integer categoryId, @RequestBody Category category) {
 		
+		
 		Category oldCategory = categoryRepository.findByCategoryid(categoryId);
 		
 		if(null == oldCategory) {
 			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("category does not exist");
+			MessageResponse messageResponse = new MessageResponse();
+			
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("category does not exist"));
 			
 		}
 		
