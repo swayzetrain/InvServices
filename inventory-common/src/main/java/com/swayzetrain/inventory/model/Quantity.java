@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -27,6 +28,7 @@ public class Quantity {
 	private Integer quantity;
 	
 	@Column(name = "quantity_Type")
+	@Size(min=0, max=50)
 	private String quantitytype;
 	
 	@Column(name = "date_Modified", nullable = false)

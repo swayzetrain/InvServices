@@ -1,11 +1,11 @@
 package com.swayzetrain.inventory.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryDeleteResponse {
 
 	private Integer deletedCount;
-	private ArrayList<Category> categoriesDeleted;
+	private List<Category> categoriesDeleted;
 	
 	public CategoryDeleteResponse()
 	{
@@ -20,11 +20,17 @@ public class CategoryDeleteResponse {
 		this.deletedCount = deletedCount;
 	}
 
-	public ArrayList<Category> getCategoriesDeleted() {
+	public List<Category> getCategoriesDeleted() {
 		return categoriesDeleted;
 	}
 
-	public void setCategoriesDeleted(ArrayList<Category> categoriesDeleted) {
+	public void setCategoriesDeleted(List<Category> categoriesDeleted) {
 		this.categoriesDeleted = categoriesDeleted;
+	}
+	
+	public void addCategoriesdeleted(Category category) {
+		
+		this.categoriesDeleted.add(category);
+		
 	}
 }

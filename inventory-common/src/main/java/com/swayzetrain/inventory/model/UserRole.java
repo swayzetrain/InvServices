@@ -8,22 +8,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "category")
-public class Category {
+@Table(name = "userrole")
+public class UserRole {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "category_Id")
-	private Integer categoryid;
+	@Column(name = "userrole_Id")
+	private Integer userroleid;
 	
-	@Column(name = "category_Name")
-	@Size(min=0, max=75)
-	private String categoryname;
+	@Column(name = "user_Id")
+	private Integer userid;
+	
+	@Column(name = "role_Id")
+	private Integer roleid;
 	
 	@Column(name = "date_Created", nullable = false)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "EST")
@@ -33,20 +34,28 @@ public class Category {
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "EST")
 	private Timestamp datemodified;
 
-	public Integer getCategoryid() {
-		return categoryid;
+	public Integer getUserroleid() {
+		return userroleid;
 	}
 
-	public void setCategoryid(Integer categoryid) {
-		this.categoryid = categoryid;
+	public void setUserroleid(Integer userroleid) {
+		this.userroleid = userroleid;
 	}
 
-	public String getCategoryname() {
-		return categoryname;
+	public Integer getUserid() {
+		return userid;
 	}
 
-	public void setCategoryname(String categoryname) {
-		this.categoryname = categoryname;
+	public void setUserid(Integer userid) {
+		this.userid = userid;
+	}
+
+	public Integer getRoleid() {
+		return roleid;
+	}
+
+	public void setRoleid(Integer roleid) {
+		this.roleid = roleid;
 	}
 
 	public Timestamp getDatecreated() {
@@ -65,4 +74,15 @@ public class Category {
 		this.datemodified = datemodified;
 	}
 	
+	public UserRole() {
+		
+	}
+	
+	public UserRole(Integer userid, Integer roleid, Timestamp datecreated, Timestamp datemodified) {
+		this.userid = userid;
+		this.roleid = roleid;
+		this.datecreated = datecreated;
+		this.datemodified = datemodified;
+	}
+
 }

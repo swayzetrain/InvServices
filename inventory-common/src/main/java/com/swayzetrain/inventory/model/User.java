@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -19,9 +20,11 @@ public class User {
 	private Integer userid;
 	
 	@Column(name = "username")
+	@Size(min=1, max=25)
 	private String username;
 	
 	@Column(name = "password")
+	@Size(min=8, max=255)
 	private String password;
 	
 	@Column(name = "date_Created")
