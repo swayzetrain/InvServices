@@ -1,0 +1,27 @@
+Test scenarios:
+
+Item:
+
+General Cases:
+
+
+
+RestController:
+
+1) getAllItems
+
+2) getItemsByName
+
+3) getItemById
+
+4) getItemsByCategoryId
+
+5) addItem
+
+6) deleteItemById
+
+7) deleteItemByName
+
+8) deleteItemsByCategoryId
+
+9) updateItemById

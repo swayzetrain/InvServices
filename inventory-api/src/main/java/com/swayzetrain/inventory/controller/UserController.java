@@ -3,6 +3,7 @@ package com.swayzetrain.inventory.controller;
 import java.sql.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.swayzetrain.inventory.auth.PasswordDecoder;
 import com.swayzetrain.inventory.auth.PasswordEncoder;
+import com.swayzetrain.inventory.enums.Constants;
 import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.model.User;
 import com.swayzetrain.inventory.repository.UserRepository;
@@ -28,21 +30,28 @@ public class UserController {
 	public ResponseEntity<?> authenticateUser(@RequestHeader(value = "username") String username, @RequestHeader(value = "password") String password) {
 		
 		User user = userRepository.findByUsername(username);
-		MessageResponse messageResponse = new MessageResponse();
+		MessageResponse messageResponse;
 		
 		if (null == user) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("user does not exist"));
+			
+			messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
 		}
 		
 		PasswordDecoder passwordDecoder = new PasswordDecoder();
 		boolean passwordMatch = passwordDecoder.decodePassword(password, user.getPassword());
 		
 		if(!passwordMatch) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(messageResponse.MessageResponseBuilder("invalid username or password"));
+			
+			messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_AUTHENTICATION_FAILED_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.FORBIDDEN);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+
 		}
 		
-		return ResponseEntity.status(HttpStatus.OK).body(messageResponse.MessageResponseBuilder("user authentication successful"));
-		
+		messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_AUTHENTICATION_SUCCESSFUL_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.OK);
+		return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+	
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
@@ -56,7 +65,8 @@ public class UserController {
 		
 		userRepository.save(user);
 		
-		return ResponseEntity.status(HttpStatus.OK).body("user was successfully created");
+		MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_CREATE_SUCESSFUL_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.OK);
+		return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 		
 	}
 	

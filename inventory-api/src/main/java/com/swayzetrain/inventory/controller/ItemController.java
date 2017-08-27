@@ -1,23 +1,27 @@
 package com.swayzetrain.inventory.controller;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.swayzetrain.inventory.enums.Constants;
 import com.swayzetrain.inventory.model.Item;
 import com.swayzetrain.inventory.model.ItemDeleteResponse;
 import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.repository.ItemRepository;
+import com.swayzetrain.inventory.service.CommonService;
+import com.swayzetrain.inventory.service.ItemRequestService;
 
 @RestController
 @RequestMapping("/api/v1/items")
@@ -25,23 +29,22 @@ public class ItemController {
 
 	@Autowired
 	private ItemRepository itemRepository;
+	
+	@Autowired
+	private ItemRequestService itemRequestService;
+	
+	@Autowired
+	private CommonService commonService;
     
 	@RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Item>> getItems() {
-		ArrayList<Item> itemList = (ArrayList<Item>) itemRepository.findAll();
+    public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId) {
+		
+		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId);
         
 		return new ResponseEntity<List<Item>>(itemList, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/name/{itemName}", method = RequestMethod.GET)
-	public ResponseEntity<List<Item>>  getItemsByName(@PathVariable(value="itemName") String itemName) {
-		
-		ArrayList<Item> itemResponse = (ArrayList<Item>) itemRepository.findByItemname(itemName);
-		
-		return new ResponseEntity<List<Item>>(itemResponse, HttpStatus.OK);
-	}
-	
-	@RequestMapping(value = "/id/{itemId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{itemId}", method = RequestMethod.GET)
 	public ResponseEntity<Item>  getItemById(@PathVariable(value="itemId") Integer itemId) {
 		
 		Item itemResponse = itemRepository.findByItemid(itemId);
@@ -49,20 +52,19 @@ public class ItemController {
 		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/category/{categoryId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Item>>  getItemsByCategoryId(@PathVariable(value="categoryId") Integer categoryId) {
-		
-		ArrayList<Item> itemResponse = (ArrayList<Item>) itemRepository.findByCategoryid(categoryId);
-		
-		return new ResponseEntity<List<Item>>(itemResponse, HttpStatus.OK);
-	}
-	
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public ResponseEntity<Item> addItem(@RequestBody Item item) {
+	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item) {
 		
-		item.setDatecreated(setTimestamp());
-		item.setDatemodified(setTimestamp());
+		if (!itemRequestService.CategoryExists(item.getCategoryid())) {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.CATEGORY_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
+		}
+		
+		item.setDatecreated(commonService.setTimestamp());
+		item.setDatemodified(commonService.setTimestamp());
 		
 		Item itemResponse = itemRepository.save(item);
 		
@@ -70,72 +72,45 @@ public class ItemController {
 		
 	}
 	
-	@RequestMapping(value = "/id/{itemId}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{itemId}", method = RequestMethod.DELETE)
 	@Transactional
 	public ResponseEntity<ItemDeleteResponse> deleteItemById(@PathVariable(value="itemId") Integer itemId) {
 		
 		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
-		ArrayList<Item> itemArray = new ArrayList<Item>();
 		
-		itemArray.add(itemRepository.findByItemid(itemId));
-		itemDeleteResponse.setItemsdeleted(itemArray);
-		
-		itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemid(itemId));
+		itemRequestService.DeleteItemById(itemId, itemDeleteResponse);
 		
 		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
 	
 	}
 	
-	@RequestMapping(value = "/name/{itemName}", method = RequestMethod.DELETE)
+	@RequestMapping(method = RequestMethod.DELETE)
 	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItemByName(@PathVariable(value = "itemName") String itemName) {
+	public ResponseEntity<ItemDeleteResponse> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId) {
 		
 		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
 		
-		itemDeleteResponse.setItemsdeleted(itemRepository.findByItemname(itemName));
-		itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemname(itemName));
+		itemRequestService.DeleteItemsFiltering(itemName, categoryId, itemDeleteResponse);
 		
 		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
 		
 	}
 	
-	@RequestMapping(value = "/category/{categoryId}", method = RequestMethod.DELETE)
-	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItemsByCategoryId(@PathVariable(value = "categoryId") Integer categoryId) {
+	@RequestMapping(value = "/{itemId}", method = RequestMethod.PUT)
+	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @Validated(Item.Existing.class) @RequestBody Item item) {
 		
-		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
-		
-		itemDeleteResponse.setItemsdeleted(itemRepository.findByCategoryid(categoryId));
-		itemDeleteResponse.setDeletedCount(itemRepository.deleteByCategoryid(categoryId));
-		
-		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
-		
-	}
-	
-	@RequestMapping(value = "/id/{itemId}", method = RequestMethod.PUT)
-	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @RequestBody Item item) {
-		
-		Item oldItem = itemRepository.findByItemid(itemId);
-		
-		if (null == oldItem) {
+		if (!itemRequestService.ItemExists(itemId)) {
 			
-			MessageResponse messageResponse = new MessageResponse();
-			
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse.MessageResponseBuilder("item does not exist"));
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.ITEM_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 			
 		}
 		
-		item.setItemid(itemId);
-		item.setDatemodified(setTimestamp());
-		item.setDatecreated(oldItem.getDatecreated());
+		itemRequestService.PopulateUpdatedItem(item, itemId);
 		
 		Item itemResponse = itemRepository.save(item);
 		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
 		
-	}
-	
-	public Timestamp setTimestamp() {
-		return new java.sql.Timestamp(new java.util.Date().getTime());
 	}
 
 }
