@@ -56,4 +56,12 @@ public class MessageResponse {
 		
 	}
 	
+	public JsonObject addParameterPair(String key, String value) {
+		
+		jsonObject.addProperty(key, value);
+		
+		return jsonObject;		
+		
+	}
+	
 }
