@@ -3,7 +3,8 @@ CREATE DATABASE inventory;
 CREATE TABLE users (
 user_Id int AUTO_INCREMENT,
 username varchar(25) UNIQUE,
-password vachar(255),
+password varchar(255),
+enabled bit not null,
 date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (user_Id)
