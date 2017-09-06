@@ -3,10 +3,10 @@ package com.swayzetrain.inventory.auth;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import com.swayzetrain.inventory.enums.CommonConstants;
+import com.swayzetrain.inventory.model.UserAuthorizationDetails;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import static java.util.Collections.emptyList;
 
 public class TokenAuthenticationService {
     
@@ -18,7 +18,7 @@ public class TokenAuthenticationService {
     
     }
 
-    public static Authentication getAuthentication(HttpServletRequest request, String jwtSecret) {
+    public static Authentication getAuthentication(HttpServletRequest request, String jwtSecret, UserDetailsServiceImplementation userDetailsService) {
         final String token = request.getHeader(CommonConstants.AUTH_HEADER_STRING);
         
         System.out.println("token: " + token);
@@ -27,9 +27,10 @@ public class TokenAuthenticationService {
             final String username = tokenHandler.parseUserFromToken(token, jwtSecret);
             if (username != null) {
             	
+            	UserAuthorizationDetails userAuthorizationDetails = (UserAuthorizationDetails) userDetailsService.loadUserByUsername(username);
             	
-            	
-            	return new UsernamePasswordAuthenticationToken(username, null, emptyList());
+            	System.out.println("getAuth: " + userAuthorizationDetails.getAuthorities().toString());
+            	return new UsernamePasswordAuthenticationToken(username, null, userAuthorizationDetails.getAuthorities());
             }
         }
         return null;

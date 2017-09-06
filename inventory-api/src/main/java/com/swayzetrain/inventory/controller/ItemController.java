@@ -42,7 +42,7 @@ public class ItemController {
 	@RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId) {
 		
-		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId);
+		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId);		
         
 		return new ResponseEntity<List<Item>>(itemList, HttpStatus.OK);
     }
@@ -57,7 +57,7 @@ public class ItemController {
 	
 	
 	@RequestMapping(method = RequestMethod.POST)
-	@Secured("Creator")
+	@Secured("ROLE_Creator")
 	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item) {
 		
 		if (!itemRequestService.CategoryExists(item.getCategoryid())) {

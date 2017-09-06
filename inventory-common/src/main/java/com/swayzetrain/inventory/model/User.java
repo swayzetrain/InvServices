@@ -32,6 +32,9 @@ public class User {
 	
 	@Column(name = "date_Modified")
 	private Timestamp datemodified;
+	
+	@Column(name = "enabled")
+	private boolean enabled;
 
 	public Integer getUserid() {
 		return userid;
@@ -71,6 +74,14 @@ public class User {
 
 	public void setDatemodified(Timestamp datemodified) {
 		this.datemodified = datemodified;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 	
 	
