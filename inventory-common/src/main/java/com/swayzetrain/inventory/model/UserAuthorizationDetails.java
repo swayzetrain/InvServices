@@ -1,13 +1,34 @@
 package com.swayzetrain.inventory.model;
 
-public class UserAuthorizationDetails {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import com.swayzetrain.inventory.enums.CommonConstants;
+
+public class UserAuthorizationDetails implements UserDetails {
 	
+	private static final long serialVersionUID = 3245333581916076330L;
 	private Integer userid;
 	private String username;
 	private String password;
-	private Integer roleid;
+	private boolean enabled;
 	private String rolename;
-	private Integer userroleid;
+	
+	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled, String rolename) {
+		
+		super();
+		this.userid = userid;
+		this.username = username;
+		this.password = password;
+		this.enabled = enabled;
+		this.rolename = rolename;
+		
+	}
 	
 	public Integer getUserid() {
 		return userid;
@@ -24,26 +45,46 @@ public class UserAuthorizationDetails {
 	public String getPassword() {
 		return password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public Integer getRoleid() {
-		return roleid;
+	public boolean isEnabled() {
+		return enabled;
 	}
-	public void setRoleid(Integer roleid) {
-		this.roleid = roleid;
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
+
 	public String getRolename() {
 		return rolename;
 	}
 	public void setRolename(String rolename) {
 		this.rolename = rolename;
 	}
-	public Integer getUserroleid() {
-		return userroleid;
-	}
-	public void setUserroleid(Integer userroleid) {
-		this.userroleid = userroleid;
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+		
+		list.add(new SimpleGrantedAuthority(CommonConstants.ROLE_PREFIX + rolename));
+		
+		return list;
 	}
 
+	@Override
+	public boolean isAccountNonExpired() {
+		return enabled;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return enabled;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return enabled;
+	}
 }

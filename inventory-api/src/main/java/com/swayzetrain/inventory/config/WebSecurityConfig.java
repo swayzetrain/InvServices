@@ -1,7 +1,5 @@
 package com.swayzetrain.inventory.config;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -14,16 +12,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.swayzetrain.inventory.auth.UserDetailsServiceImplementation;
-import com.swayzetrain.inventory.enums.SqlConstants;
 import com.swayzetrain.inventory.filter.JWTAuthenticationFilter;
 import com.swayzetrain.inventory.filter.JWTLoginFilter;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-	private DataSource datasource;
 	
 	@Autowired
 	private UserDetailsServiceImplementation userDetailsService;
@@ -34,10 +28,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Value("${jwt.TTL}")
 	private long jwtTTL;
 	
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+	@Autowired
+	public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
 		
-		auth.jdbcAuthentication().passwordEncoder(new BCryptPasswordEncoder()).dataSource(datasource).usersByUsernameQuery(SqlConstants.FIND_USER_QUERY).authoritiesByUsernameQuery(SqlConstants.FIND_ROLES_QUERY);
+		auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
 		
 	}
 	
@@ -53,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		                 .addFilterBefore(new JWTLoginFilter("/api/v1/accounts", authenticationManager(), jwtSecret, jwtTTL),
 		                         UsernamePasswordAuthenticationFilter.class)
 		                 // And filter other requests to check the presence of JWT in header
-		                 .addFilterBefore(new JWTAuthenticationFilter(jwtSecret),
+		                 .addFilterBefore(new JWTAuthenticationFilter(jwtSecret, userDetailsService),
 		                         UsernamePasswordAuthenticationFilter.class);
 		
 	}
