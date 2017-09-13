@@ -7,12 +7,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
-import com.swayzetrain.inventory.model.Role;
-import com.swayzetrain.inventory.model.User;
-import com.swayzetrain.inventory.model.UserRole;
-import com.swayzetrain.inventory.repository.RoleRepository;
-import com.swayzetrain.inventory.repository.UserRepository;
-import com.swayzetrain.inventory.repository.UserRoleRepository;
+import com.swayzetrain.inventory.common.model.Role;
+import com.swayzetrain.inventory.common.model.User;
+import com.swayzetrain.inventory.common.model.UserRole;
+import com.swayzetrain.inventory.common.repository.RoleRepository;
+import com.swayzetrain.inventory.common.repository.UserRepository;
+import com.swayzetrain.inventory.common.repository.UserRoleRepository;
 
 @Component
 public class UserDetailsServiceImplementation implements UserDetailsService {
