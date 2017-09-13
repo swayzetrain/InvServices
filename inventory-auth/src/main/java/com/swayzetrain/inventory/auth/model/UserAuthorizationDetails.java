@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.model;
+package com.swayzetrain.inventory.auth.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.swayzetrain.inventory.enums.CommonConstants;
+import com.swayzetrain.inventory.auth.enums.Constants;
 
 public class UserAuthorizationDetails implements UserDetails {
 	
@@ -68,7 +68,7 @@ public class UserAuthorizationDetails implements UserDetails {
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 		
-		list.add(new SimpleGrantedAuthority(CommonConstants.ROLE_PREFIX + rolename));
+		list.add(new SimpleGrantedAuthority(Constants.ROLE_PREFIX + rolename));
 		
 		return list;
 	}

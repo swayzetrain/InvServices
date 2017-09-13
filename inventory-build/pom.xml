@@ -30,6 +30,7 @@
 	<modules>
 		<module>../inventory-common</module>
 		<module>../inventory-api</module>
+		<module>../inventory-auth</module>
 	</modules>
 
 	<dependencyManagement>
@@ -37,6 +38,11 @@
 			<dependency>
 				<groupId>com.swayzetrain.inventory</groupId>
 				<artifactId>inventory-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.swayzetrain.inventory</groupId>
+				<artifactId>inventory-auth</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 		</dependencies>

@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.swayzetrain.inventory.auth.PasswordDecoder;
-import com.swayzetrain.inventory.auth.PasswordEncoder;
+import com.swayzetrain.inventory.auth.services.PasswordHandler;
 import com.swayzetrain.inventory.enums.Constants;
 import com.swayzetrain.inventory.model.MessageResponse;
 import com.swayzetrain.inventory.model.User;
@@ -39,7 +38,7 @@ public class UserController {
 			
 		}
 		
-		PasswordDecoder passwordDecoder = new PasswordDecoder();
+		PasswordHandler passwordDecoder = new PasswordHandler();
 		boolean passwordMatch = passwordDecoder.decodePassword(password, user.getPassword());
 		
 		if(!passwordMatch) {
@@ -57,7 +56,7 @@ public class UserController {
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<?> createUser(@RequestBody User user) {
 		
-		PasswordEncoder passwordEncoder = new PasswordEncoder();
+		PasswordHandler passwordEncoder = new PasswordHandler();
 		user.setPassword(passwordEncoder.encodePassword(user.getPassword()));
 		
 		user.setDatecreated(setTimestamp());

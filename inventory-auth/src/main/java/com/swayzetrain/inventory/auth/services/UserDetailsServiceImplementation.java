@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.auth;
+package com.swayzetrain.inventory.auth.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -6,9 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.model.Role;
 import com.swayzetrain.inventory.model.User;
-import com.swayzetrain.inventory.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.model.UserRole;
 import com.swayzetrain.inventory.repository.RoleRepository;
 import com.swayzetrain.inventory.repository.UserRepository;

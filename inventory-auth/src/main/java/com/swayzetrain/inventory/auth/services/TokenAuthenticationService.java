@@ -1,9 +1,10 @@
-package com.swayzetrain.inventory.auth;
+package com.swayzetrain.inventory.auth.services;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import com.swayzetrain.inventory.enums.CommonConstants;
-import com.swayzetrain.inventory.model.UserAuthorizationDetails;
+
+import com.swayzetrain.inventory.auth.enums.Constants;
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,12 +15,12 @@ public class TokenAuthenticationService {
 
     public static void addAuthentication(HttpServletResponse response, String username, String jwtSecret, long jwtTTL) {
     	
-        response.addHeader(CommonConstants.AUTH_HEADER_STRING, CommonConstants.TOKEN_PREFIX + " " + tokenHandler.GenerateJWT(username, jwtSecret, jwtTTL));
+        response.addHeader(Constants.AUTH_HEADER_STRING, Constants.TOKEN_PREFIX + " " + tokenHandler.GenerateJWT(username, jwtSecret, jwtTTL));
     
     }
 
     public static Authentication getAuthentication(HttpServletRequest request, String jwtSecret, UserDetailsServiceImplementation userDetailsService) {
-        final String token = request.getHeader(CommonConstants.AUTH_HEADER_STRING);
+        final String token = request.getHeader(Constants.AUTH_HEADER_STRING);
         
         System.out.println("token: " + token);
         

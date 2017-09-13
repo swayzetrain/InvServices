@@ -3,8 +3,8 @@ package com.swayzetrain.inventory.filter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.swayzetrain.inventory.auth.TokenAuthenticationService;
-import com.swayzetrain.inventory.auth.UserDetailsServiceImplementation;
+import com.swayzetrain.inventory.auth.services.TokenAuthenticationService;
+import com.swayzetrain.inventory.auth.services.UserDetailsServiceImplementation;
 
 import org.springframework.security.core.Authentication;
 import javax.servlet.FilterChain;

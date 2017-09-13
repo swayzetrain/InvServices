@@ -1,8 +1,8 @@
-package com.swayzetrain.inventory.auth;
+package com.swayzetrain.inventory.auth.services;
 
 import java.util.Date;
 
-import com.swayzetrain.inventory.enums.CommonConstants;
+import com.swayzetrain.inventory.auth.enums.Constants;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -18,7 +18,7 @@ public class TokenHandler {
 	public String parseUserFromToken(String token, String jwtSecret) {
         String username = Jwts.parser()
                 .setSigningKey(jwtSecret)
-                .parseClaimsJws(token.replace(CommonConstants.TOKEN_PREFIX, ""))
+                .parseClaimsJws(token.replace(Constants.TOKEN_PREFIX, ""))
                 .getBody()
                 .getSubject();
         
