@@ -19,8 +19,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<jbcrypt.version>0.4</jbcrypt.version>
-		<java.jwt.version>0.7.0</java.jwt.version>
 		<servlet.api.version>2.5</servlet.api.version>
 	</properties>
 
@@ -58,16 +56,6 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-		<dependency>
-    		<groupId>org.mindrot</groupId>
-    		<artifactId>jbcrypt</artifactId>
-    		<version>${jbcrypt.version}</version>
-		</dependency>
-		<dependency>
-    		<groupId>io.jsonwebtoken</groupId>
-   			<artifactId>jjwt</artifactId>
-    		<version>${java.jwt.version}</version>
 		</dependency>
 	</dependencies>
 
