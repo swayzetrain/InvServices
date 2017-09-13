@@ -40,6 +40,7 @@ public class ItemController {
 	private CommonService commonService;
     
 	@RequestMapping(method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
     public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId) {
 		
 		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId);		
@@ -48,6 +49,7 @@ public class ItemController {
     }
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<Item>  getItemById(@PathVariable(value="itemId") Integer itemId) {
 		
 		Item itemResponse = itemRepository.findByItemid(itemId);
@@ -57,7 +59,7 @@ public class ItemController {
 	
 	
 	@RequestMapping(method = RequestMethod.POST)
-	@Secured("ROLE_Creator")
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item) {
 		
 		if (!itemRequestService.CategoryExists(item.getCategoryid())) {
@@ -77,6 +79,7 @@ public class ItemController {
 	}
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.DELETE)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
 	public ResponseEntity<ItemDeleteResponse> deleteItemById(@PathVariable(value="itemId") Integer itemId) {
 		
@@ -89,6 +92,7 @@ public class ItemController {
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
 	public ResponseEntity<ItemDeleteResponse> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId) {
 		
@@ -101,6 +105,7 @@ public class ItemController {
 	}
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.PUT)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @Validated(Item.Existing.class) @RequestBody Item item) {
 		
 		if (!itemRequestService.ItemExists(itemId)) {
