@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +24,7 @@ import com.swayzetrain.inventory.common.repository.QuantityRepository;
 
 @RestController
 @RequestMapping("/api/v1/quantities")
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class QuantityController {
 	
 	@Autowired
@@ -34,6 +37,7 @@ public class QuantityController {
 	private QuantityRequestService quantityRequestService;
 	
 	@RequestMapping(method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<List<Quantity>> GetQuantityByItem(@RequestParam(value = "itemid", required = false) Integer itemId, @RequestParam(value = "itemname", required = false) String itemName) {
 		
 		List<Quantity> quantityListResponse = quantityRequestService.GetQuantitesByItemFiltering(itemId, itemName);
@@ -43,6 +47,7 @@ public class QuantityController {
 	}
 	
 	@RequestMapping(value = "/{quantityId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<Quantity> GetQuantityByQuantityId(@PathVariable(value = "quantityId") Integer quantityId) {
 		
 		Quantity quantityResponse = quantityRepository.findByQuantityid(quantityId);
@@ -51,6 +56,7 @@ public class QuantityController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<Quantity> AddQuantity(@RequestBody Quantity quantity) {
 		
 		quantity.setDatemodified(commonService.setTimestamp());		
@@ -62,6 +68,7 @@ public class QuantityController {
 	}
 	
 	@RequestMapping(value = "/{quantityId}", method = RequestMethod.PUT)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<?> updateQuantityByQuantityId(@PathVariable(value = "quantityId") Integer quantityId, @RequestBody Quantity quantity) {
 		
 		if (!quantityRequestService.QuantityExists(quantityId)) {

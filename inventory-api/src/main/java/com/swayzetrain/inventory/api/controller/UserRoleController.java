@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,7 @@ import com.swayzetrain.inventory.common.repository.UserRoleRepository;
 
 @RestController
 @RequestMapping("api/v1/userroles")
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class UserRoleController {
 
 	@Autowired
@@ -32,6 +35,7 @@ public class UserRoleController {
 	private UserRoleRequestService userRoleRequestService;
 	
 	@RequestMapping(method = RequestMethod.GET)
+	@Secured({"ROLE_Admin"})
 	public ResponseEntity<List<UserRole>> getAllUserRoles() {
 		
 		ArrayList<UserRole> userRoleList = (ArrayList<UserRole>) userRoleRepository.findAll();
@@ -41,6 +45,7 @@ public class UserRoleController {
 	}
 	
 	@RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Admin"})
 	public ResponseEntity<UserRole> getUserRoleByUserId(@PathVariable(value = "userId") Integer userId) {
 		
 		UserRole userRole = userRoleRepository.findByUserid(userId);
@@ -50,6 +55,7 @@ public class UserRoleController {
 	}
 	
 	@RequestMapping(value = "/id/{userRoleId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Admin"})
 	public ResponseEntity<UserRole> getUserRoleByUserRoleId(@PathVariable(value = "userRoleId") Integer userRoleId) {
 		
 		UserRole userRole = userRoleRepository.findByUserroleid(userRoleId);
@@ -59,6 +65,7 @@ public class UserRoleController {
 	}
 	
 	@RequestMapping(value = "/role/{roleId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Admin"})
 	public ResponseEntity<UserRole> getUserRoleByRoleId(@PathVariable(value = "roleId") Integer roleId) {
 		
 		UserRole userRole = userRoleRepository.findByRoleid(roleId);
@@ -68,6 +75,7 @@ public class UserRoleController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
+	@Secured({"ROLE_Admin"})
 	public ResponseEntity<?> addUserRole(@RequestBody UserRolePostRequest userRolePostRequest) {
 		
 		

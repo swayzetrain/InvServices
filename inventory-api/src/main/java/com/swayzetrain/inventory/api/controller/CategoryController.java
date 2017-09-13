@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,7 @@ import com.swayzetrain.inventory.common.repository.CategoryRepository;
 
 @RestController
 @RequestMapping("/api/v1/categories")
+@EnableGlobalMethodSecurity(securedEnabled = true)
 public class CategoryController {
 
 	@Autowired
@@ -36,6 +39,7 @@ public class CategoryController {
 	private CommonService commonService;
 	
 	@RequestMapping(method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<List<Category>> getCategories(@RequestParam(value = "categoryname", required = false) String categoryName) {
 		
 		List<Category> categoryList = categoryRequestService.GetAllCategoriesFiltering(categoryName);
@@ -44,6 +48,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(value = "/{categoryId}", method = RequestMethod.GET)
+	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<Category> getCategoryById(@PathVariable(value="categoryId") Integer categoryId) {
 		
 		Category categoryResponse = categoryRepository.findByCategoryid(categoryId);
@@ -53,6 +58,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<Category> addCategory(@RequestBody Category category) {
 		
 		category.setDatecreated(commonService.setTimestamp());
@@ -65,6 +71,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(value = "/{categoryId}", method = RequestMethod.DELETE)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
 	public ResponseEntity<CategoryDeleteResponse> deleteCategoryById(@PathVariable(value = "categoryId") Integer categoryId) {
 	
@@ -77,6 +84,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
 	public ResponseEntity<CategoryDeleteResponse> deleteCategoryByName(@RequestParam(value = "categoryName") String categoryName ) {
 		
@@ -89,6 +97,7 @@ public class CategoryController {
 	}
 	
 	@RequestMapping(value = "/{categoryId}", method = RequestMethod.PUT)
+	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<?> updateCategoryById(@PathVariable(value = "categoryId") Integer categoryId, @RequestBody Category category) {
 		
 		if(!categoryRequestService.CategoryExists(categoryId)) {
