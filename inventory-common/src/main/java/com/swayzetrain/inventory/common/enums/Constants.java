@@ -1,6 +1,6 @@
 package com.swayzetrain.inventory.common.enums;
 
-public class CommonConstants {
+public class Constants {
 	
 
 

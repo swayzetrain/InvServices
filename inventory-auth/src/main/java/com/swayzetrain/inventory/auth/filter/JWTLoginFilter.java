@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.api.filter;
+package com.swayzetrain.inventory.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swayzetrain.inventory.auth.services.TokenAuthenticationService;
@@ -41,7 +41,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
         AccountCredentials creds = new ObjectMapper()
                 .readValue(req.getInputStream(), AccountCredentials.class);
         
-        
         return getAuthenticationManager().authenticate(
                 new UsernamePasswordAuthenticationToken(
                         creds.getUsername(),
@@ -58,7 +57,10 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             HttpServletResponse res, FilterChain chain,
             Authentication auth) throws IOException, ServletException {
     	
+    	System.out.println("Entering JWTLoginFilter successfulAuthentication");
+    	
         TokenAuthenticationService.addAuthentication(res, auth.getName(), this.jwtSecret, this.jwtTTL);
+        
     }
 
 	public String getJwtSecret() {

@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.api.filter;
+package com.swayzetrain.inventory.auth.filter;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;

@@ -33,7 +33,7 @@ public class User {
 	@Column(name = "date_Modified")
 	private Timestamp datemodified;
 	
-	@Column(name = "enabled")
+	@Column(name = "enabled", nullable = true)
 	private boolean enabled;
 
 	public Integer getUserid() {

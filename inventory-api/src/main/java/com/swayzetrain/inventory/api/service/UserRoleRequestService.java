@@ -1,6 +1,7 @@
 package com.swayzetrain.inventory.api.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,12 @@ public class UserRoleRequestService {
 	
 	@Autowired
 	private UserRoleRepository userRoleRepository;
+	
+	@Autowired
+	private CommonService commonService;
+	
+	@Value("${default.new.userrole}")
+	private Integer defaultNewUserRole;
 	
 	
 	public ResponseEntity<?> establishUserRoleObject (UserRolePostRequest userRolePostRequest) {
@@ -98,6 +105,27 @@ public class UserRoleRequestService {
 		}
 		
 		return true;
+	}
+	
+	public boolean establishNewUserRole (String username) {
+		
+		//Set userID
+		User user = userRepository.findByUsername(username);
+		
+		if(null == user) {
+			return false;
+		}
+		
+		UserRole userRole = new UserRole();
+		userRole.setUserid(user.getUserid());
+		userRole.setRoleid(defaultNewUserRole);
+		userRole.setDatecreated(commonService.setTimestamp());
+		userRole.setDatemodified(commonService.setTimestamp());
+		
+		userRoleRepository.save(userRole);
+		
+		return true;
+		
 	}
 
 }

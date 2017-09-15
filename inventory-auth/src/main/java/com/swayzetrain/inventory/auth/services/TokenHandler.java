@@ -8,9 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenHandler {
 	
-	//private String jwtSecret = "k9mgv8aPPVKwGmkb";
-	//private long tokenTTL = 7200000;
-	
 	public TokenHandler() {
 
 	}

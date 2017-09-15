@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.api.config;
+package com.swayzetrain.inventory.auth.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.swayzetrain.inventory.api.filter.JWTAuthenticationFilter;
-import com.swayzetrain.inventory.api.filter.JWTLoginFilter;
+import com.swayzetrain.inventory.auth.filter.JWTAuthenticationFilter;
+import com.swayzetrain.inventory.auth.filter.JWTLoginFilter;
 import com.swayzetrain.inventory.auth.services.UserDetailsServiceImplementation;
 
 @Configuration
