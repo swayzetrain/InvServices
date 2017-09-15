@@ -30,13 +30,10 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
-		System.out.println("LoadByUsername1");
-		
 		if ( username == null || username.isEmpty() ){
 	        throw new UsernameNotFoundException("username is empty");
 	    }		
-		
-		System.out.println("LoadByUsername2");
+
 	    User foundUser = userRepository.findByUsername(username);
 	    
 	    UserRole foundUserRole = userRoleRepository.findByUserid(foundUser.getUserid());
@@ -45,11 +42,10 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 	    
 	    if (null != foundUser && null != foundUserRole && null != foundRole) {
 	    	
-	    	System.out.println("LoadByUsername3");
 	    	UserAuthorizationDetails userAuthorizationDetails = new UserAuthorizationDetails(foundUser.getUserid(), username, foundUser.getPassword(), foundUser.isEnabled(), foundRole.getRolename());
 	    
 	    	if( userAuthorizationDetails != null ){
-	    		System.out.println("roles: " + userAuthorizationDetails.getAuthorities().toString());
+
 		        return userAuthorizationDetails;
 
 		    }

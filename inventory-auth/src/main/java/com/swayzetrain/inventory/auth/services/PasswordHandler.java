@@ -16,7 +16,7 @@ public PasswordHandler() {
 		
 	}
 	
-	public boolean decodePassword(String password, String hashedPassword) {
+	public boolean CheckPassword(String password, String hashedPassword) {
 		
 		if(BCrypt.checkpw(password, hashedPassword)) {
 			
