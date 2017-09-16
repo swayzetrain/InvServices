@@ -3,10 +3,29 @@ CREATE DATABASE inventory;
 CREATE TABLE users (
 user_Id int AUTO_INCREMENT,
 username varchar(25) UNIQUE,
-password vachar(255),
+password varchar(255),
+enabled bit not null,
 date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (user_Id)
+);
+
+CREATE TABLE role (
+role_Id int AUTO_INCREMENT,
+role_Name varchar(50) unique,
+role_Description varchar(150),
+PRIMARY KEY (role_Id)
+);
+
+CREATE TABLE userrole (
+userrole_Id int AUTO_INCREMENT,
+user_Id int unique,
+role_Id int,
+date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+PRIMARY KEY (userrole_Id),
+FOREIGN KEY (user_Id) REFERENCES users(user_Id),
+FOREIGN KEY (role_Id) REFERENCES role(role_Id)
 );
 
 CREATE TABLE category (
