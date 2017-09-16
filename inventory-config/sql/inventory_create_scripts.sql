@@ -17,21 +17,33 @@ role_Description varchar(150),
 PRIMARY KEY (role_Id)
 );
 
+CREATE TABLE instance (
+instance_Id int AUTO_INCREMENT,
+instance_Name varchar(75),
+instance_Description varchar(150),
+creation_User_Id int,
+date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+PRIMARY KEY (instance_Id)
+)
+
 CREATE TABLE userrole (
 userrole_Id int AUTO_INCREMENT,
-user_Id int unique,
+user_Id int,
 role_Id int,
+instance_Id int,
 date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (userrole_Id),
 FOREIGN KEY (user_Id) REFERENCES users(user_Id),
-FOREIGN KEY (role_Id) REFERENCES role(role_Id)
+FOREIGN KEY (role_Id) REFERENCES role(role_Id),
+FOREIGN KEY (instance_Id) REFERENCES instance(instance_Id)
 );
 
 CREATE TABLE category (
 category_Id int AUTO_INCREMENT,
 category_Name varchar(75),
-user_Id int,
+creation_User_Id int,
 date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (category_Id),
@@ -42,7 +54,7 @@ CREATE TABLE item (
 item_Id int AUTO_INCREMENT,
 item_Name varchar(75),
 category_Id int NOT NULL,
-user_Id int,
+creation_User_Id int,
 date_Created datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (item_Id),
@@ -55,7 +67,6 @@ quantity_Id int AUTO_INCREMENT,
 item_Id int UNIQUE,
 quantity int DEFAULT 0 NOT NULL,
 quantity_Type varchar(50),
-user_Id int,
 date_Modified datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY (quantity_Id),
 FOREIGN KEY (item_Id) REFERENCES item(item_Id),
