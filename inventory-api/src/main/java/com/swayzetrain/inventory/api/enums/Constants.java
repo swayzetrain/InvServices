@@ -12,5 +12,6 @@ public class Constants {
 	public static String USERROLE_EXISTS_MESSAGE = "userrole already exists";
 	public static String USER_NOT_PROVIDED = "no user was provided";
 	public static String ROLE_NOT_PROVIDED = "no role was provided";
+	public static String USER_NOT_AUTHORIZED = "The user is not authorized to perform this action";
 	
 }

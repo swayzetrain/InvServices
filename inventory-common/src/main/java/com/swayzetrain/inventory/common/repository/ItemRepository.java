@@ -8,14 +8,16 @@ import com.swayzetrain.inventory.common.model.Item;
 
 public interface ItemRepository extends JpaRepository<Item, Long>{
 	
-	ArrayList<Item> findByItemname(String itemname);
-	Item findByItemid(Integer itemid);
-	ArrayList<Item> findByCategoryid(Integer categoryid);
-	ArrayList<Item> findByItemnameAndCategoryid(String itemname, Integer categoryid);
+	ArrayList<Item> findByInstanceid(Integer instanceid);
+	Item findByItemidAndInstanceid(Integer itemid, Integer instanceid);
+	ArrayList<Item> findByItemnameAndCategoryidAndInstanceid(String itemname, Integer categoryid, Integer instanceid);
+	ArrayList<Item> findByItemnameAndInstanceid(String itemname, Integer instanceid);
+	ArrayList<Item> findByCategoryidAndInstanceid(Integer categoryid, Integer instanceid);
 	
-	Integer deleteByItemid(Integer itemid);
-	Integer deleteByItemname(String itemname);
-	Integer deleteByCategoryid(Integer categoryid);
-	Integer deleteByItemnameAndCategoryid(String itemname, Integer categoryid);
+	Integer deleteByItemidAndInstanceid(Integer itemid, Integer instanceid);
+	Integer deleteByItemnameAndCategoryidAndInstanceid(String itemname, Integer categoryid, Integer instanceid);
+	Integer deleteByItemnameAndInstanceid(String itemname, Integer instanceid);
+	Integer deleteByCategoryidAndInstanceid(Integer categoryid, Integer instanceid);
+
 	
 }

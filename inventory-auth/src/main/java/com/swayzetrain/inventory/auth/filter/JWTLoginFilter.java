@@ -1,8 +1,8 @@
 package com.swayzetrain.inventory.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.swayzetrain.inventory.auth.model.AccountCredentials;
 import com.swayzetrain.inventory.auth.services.TokenAuthenticationService;
-import com.swayzetrain.inventory.common.model.AccountCredentials;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

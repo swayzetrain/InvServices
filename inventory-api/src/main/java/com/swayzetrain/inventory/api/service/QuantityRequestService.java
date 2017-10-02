@@ -69,18 +69,29 @@ public class QuantityRequestService {
 		
 	}
 	
-	public List<Quantity> GetQuantitesByItemFiltering(Integer itemId, String itemName) {
+	public List<Quantity> GetQuantitesByItemFiltering(Integer itemId, String itemName, Integer instanceid) {
 		
 		if (null == itemName && null == itemId) {
 			
-			return quantityRepository.findAll();
+			ArrayList<Item> itemList = itemRepository.findByInstanceid(instanceid);
+			List<Integer> itemIdList = new ArrayList<Integer>();
+			
+			for(int i = 0; i < itemList.size(); i++) {
+				
+				itemIdList.add(itemList.get(i).getItemid());
+				
+			}
+			
+			List<Quantity> quantityList = quantityRepository.findByItemidIn(itemIdList);
+			
+			return quantityList;
 			
 		}
 		
 		if (null != itemName && null != itemId) {
 			
 			List<Quantity> quantityList = new ArrayList<Quantity>();
-			Item item = itemRepository.findByItemid(itemId);
+			Item item = itemRepository.findByItemidAndInstanceid(itemId, instanceid);
 			
 			if (item.getItemname().equalsIgnoreCase(itemName)) {
 				
@@ -96,7 +107,7 @@ public class QuantityRequestService {
 			
 			List<Integer> itemIdList = new ArrayList<Integer>();
 			
-			List<Item> itemByName = itemRepository.findByItemname(itemName);
+			List<Item> itemByName = itemRepository.findByItemnameAndInstanceid(itemName, instanceid);
 			
 			for (int i = 0; i < itemByName.size(); i++) {
 				
@@ -113,6 +124,18 @@ public class QuantityRequestService {
 		quantityList.add(quantityRepository.findByItemid(itemId));
 		
 		return quantityList;
+		
+	}
+	
+	public boolean CheckItemInstance(Integer itemid, Integer instanceid) {
+		
+		Item item = itemRepository.findByItemidAndInstanceid(itemid, instanceid);
+		
+		if(null == item) {
+			return false;
+		}
+		
+		return true;
 		
 	}
 	

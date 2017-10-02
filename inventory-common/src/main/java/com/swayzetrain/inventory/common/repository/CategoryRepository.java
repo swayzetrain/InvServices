@@ -8,9 +8,10 @@ import com.swayzetrain.inventory.common.model.Category;
 
 public interface CategoryRepository extends JpaRepository<Category, Long>{
 
-	Category findByCategoryid(Integer categoryid);
-	List<Category> findByCategoryname(String categoryname);
+	List<Category> findByInstanceid(Integer instanceid);
+	Category findByCategoryidAndInstanceid(Integer categoryid, Integer instanceid);
+	List<Category> findByCategorynameAndInstanceid(String categoryname, Integer instanceid);
 	
-	Integer deleteByCategoryid(Integer categoryid);
-	Integer deleteByCategoryname(String categoryname);
+	Integer deleteByCategoryidAndInstanceid(Integer categoryid, Integer instanceid);
+	Integer deleteByCategorynameAndInstanceid(String categoryname, Integer instanceid);
 }

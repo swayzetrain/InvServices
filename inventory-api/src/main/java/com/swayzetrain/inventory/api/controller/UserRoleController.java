@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import com.swayzetrain.inventory.api.enums.Constants;
 import com.swayzetrain.inventory.api.model.MessageResponse;
 import com.swayzetrain.inventory.api.model.UserRolePostRequest;
 import com.swayzetrain.inventory.api.service.UserRoleRequestService;
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.UserRole;
 import com.swayzetrain.inventory.common.repository.UserRoleRepository;
 
@@ -36,9 +39,9 @@ public class UserRoleController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	@Secured({"ROLE_Admin"})
-	public ResponseEntity<List<UserRole>> getAllUserRoles() {
+	public ResponseEntity<List<UserRole>> getAllUserRoles(@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		ArrayList<UserRole> userRoleList = (ArrayList<UserRole>) userRoleRepository.findAll();
+		ArrayList<UserRole> userRoleList = (ArrayList<UserRole>) userRoleRepository.findByInstanceid(userAuthorizationDetails.getInstanceid());
 		
 		return new ResponseEntity<List<UserRole>>(userRoleList, HttpStatus.OK);
 		
@@ -46,7 +49,14 @@ public class UserRoleController {
 	
 	@RequestMapping(value = "/user/{userId}", method = RequestMethod.GET)
 	@Secured({"ROLE_Admin"})
-	public ResponseEntity<UserRole> getUserRoleByUserId(@PathVariable(value = "userId") Integer userId) {
+	public ResponseEntity<?> getUserRoleByUserId(@PathVariable(value = "userId") Integer userId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
+		
+		if(userId != userAuthorizationDetails.getUserid()) {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_AUTHORIZED, MediaType.APPLICATION_JSON, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
+		}
 		
 		UserRole userRole = userRoleRepository.findByUserid(userId);
 		
@@ -56,9 +66,17 @@ public class UserRoleController {
 	
 	@RequestMapping(value = "/id/{userRoleId}", method = RequestMethod.GET)
 	@Secured({"ROLE_Admin"})
-	public ResponseEntity<UserRole> getUserRoleByUserRoleId(@PathVariable(value = "userRoleId") Integer userRoleId) {
+	public ResponseEntity<?> getUserRoleByUserRoleId(@PathVariable(value = "userRoleId") Integer userRoleId,
+			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
 		UserRole userRole = userRoleRepository.findByUserroleid(userRoleId);
+		
+		if(userRole.getUserid() != userAuthorizationDetails.getUserid() || userRole.getInstanceid() != userAuthorizationDetails.getInstanceid()) {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_AUTHORIZED, MediaType.APPLICATION_JSON, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
+		}
 		
 		return new ResponseEntity<UserRole>(userRole, HttpStatus.OK);
 		
@@ -66,9 +84,16 @@ public class UserRoleController {
 	
 	@RequestMapping(value = "/role/{roleId}", method = RequestMethod.GET)
 	@Secured({"ROLE_Admin"})
-	public ResponseEntity<UserRole> getUserRoleByRoleId(@PathVariable(value = "roleId") Integer roleId) {
+	public ResponseEntity<?> getUserRoleByRoleId(@PathVariable(value = "roleId") Integer roleId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
 		UserRole userRole = userRoleRepository.findByRoleid(roleId);
+		
+		if(userRole.getUserid() != userAuthorizationDetails.getUserid() || userRole.getInstanceid() != userAuthorizationDetails.getInstanceid()) {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_AUTHORIZED, MediaType.APPLICATION_JSON, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
+		}
 		
 		return new ResponseEntity<UserRole>(userRole, HttpStatus.OK);
 		
@@ -76,8 +101,7 @@ public class UserRoleController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured({"ROLE_Admin"})
-	public ResponseEntity<?> addUserRole(@RequestBody UserRolePostRequest userRolePostRequest) {
-		
+	public ResponseEntity<?> addUserRole(@Validated(UserRole.New.class)@RequestBody UserRolePostRequest userRolePostRequest, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
 		ResponseEntity<?> establishUserRoleObject = userRoleRequestService.establishUserRoleObject(userRolePostRequest);
 		
@@ -95,7 +119,7 @@ public class UserRoleController {
 		
 		
 		//Convert userRolePostRequest to UserRole and store it in the database
-		UserRole newUserRole = new UserRole(userRolePostRequest.getUserid(), userRolePostRequest.getRoleid(), setTimestamp(), setTimestamp());
+		UserRole newUserRole = new UserRole(userRolePostRequest.getUserid(), userRolePostRequest.getRoleid(), userAuthorizationDetails.getInstanceid(), setTimestamp(), setTimestamp());
 		UserRole userRoleResponse = userRoleRepository.save(newUserRole);
 		
 		return new ResponseEntity<>(userRoleResponse, HttpStatus.OK);

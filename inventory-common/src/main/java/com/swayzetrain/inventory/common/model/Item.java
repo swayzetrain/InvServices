@@ -34,6 +34,12 @@ public class Item {
 	@NotNull(groups = New.class, message = "categoryid is required for this request")
 	private Integer categoryid;
 	
+	@Column(name = "instance_Id")
+	private Integer instanceid;
+	
+	@Column(name = "creation_User_Id")
+	private Integer creationuserid;
+	
 	@Column(name = "date_Created", nullable = false)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "EST")
 	@Null(groups = {New.class, Existing.class}, message = "datecreated must be null for this request")
@@ -68,6 +74,22 @@ public class Item {
 		this.categoryid = categoryId;
 	}
 	
+	public Integer getInstanceid() {
+		return instanceid;
+	}
+
+	public void setInstanceid(Integer instanceid) {
+		this.instanceid = instanceid;
+	}
+
+	public Integer getCreationuserid() {
+		return creationuserid;
+	}
+
+	public void setCreationuserid(Integer creationuserid) {
+		this.creationuserid = creationuserid;
+	}
+
 	public Timestamp getDatecreated() {
 		return datecreated;
 	}

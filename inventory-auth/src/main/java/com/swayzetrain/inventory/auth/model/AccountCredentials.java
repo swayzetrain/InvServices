@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.common.model;
+package com.swayzetrain.inventory.auth.model;
 
 public class AccountCredentials {
 

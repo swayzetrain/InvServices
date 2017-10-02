@@ -18,15 +18,42 @@ public class UserAuthorizationDetails implements UserDetails {
 	private String password;
 	private boolean enabled;
 	private String rolename;
+	private Integer instanceid;
+	
+	public UserAuthorizationDetails() {
+		
+	}
 	
 	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled, String rolename) {
-		
+		// Used for an established user
 		super();
 		this.userid = userid;
 		this.username = username;
 		this.password = password;
 		this.enabled = enabled;
 		this.rolename = rolename;
+		
+	}
+	
+	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled, String rolename, Integer instanceid) {
+		// Used for an established user
+		super();
+		this.userid = userid;
+		this.username = username;
+		this.password = password;
+		this.enabled = enabled;
+		this.rolename = rolename;
+		this.instanceid = instanceid;
+		
+	}
+	
+	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled) {
+		// Used for a new user
+		super();
+		this.userid = userid;
+		this.username = username;
+		this.password = password;
+		this.enabled = enabled;
 		
 	}
 	
@@ -62,6 +89,14 @@ public class UserAuthorizationDetails implements UserDetails {
 	}
 	public void setRolename(String rolename) {
 		this.rolename = rolename;
+	}
+
+	public Integer getInstanceid() {
+		return instanceid;
+	}
+
+	public void setInstanceid(Integer instanceid) {
+		this.instanceid = instanceid;
 	}
 
 	@Override

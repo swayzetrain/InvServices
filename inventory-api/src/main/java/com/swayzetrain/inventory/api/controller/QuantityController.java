@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import com.swayzetrain.inventory.api.enums.Constants;
 import com.swayzetrain.inventory.api.model.MessageResponse;
 import com.swayzetrain.inventory.api.service.CommonService;
 import com.swayzetrain.inventory.api.service.QuantityRequestService;
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Quantity;
 import com.swayzetrain.inventory.common.repository.QuantityRepository;
 
@@ -38,9 +41,19 @@ public class QuantityController {
 	
 	@RequestMapping(method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<List<Quantity>> GetQuantityByItem(@RequestParam(value = "itemid", required = false) Integer itemId, @RequestParam(value = "itemname", required = false) String itemName) {
+	public ResponseEntity<?> GetQuantityByItem(@RequestParam(value = "itemid", required = false) Integer itemId, @RequestParam(value = "itemname", required = false) String itemName,
+			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		List<Quantity> quantityListResponse = quantityRequestService.GetQuantitesByItemFiltering(itemId, itemName);
+		boolean itemInstanceCheck = quantityRequestService.CheckItemInstance(itemId, userAuthorizationDetails.getInstanceid());
+		
+		if(!itemInstanceCheck) {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_AUTHORIZED, MediaType.APPLICATION_JSON, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
+			
+		}
+		
+		List<Quantity> quantityListResponse = quantityRequestService.GetQuantitesByItemFiltering(itemId, itemName, userAuthorizationDetails.getInstanceid());
 		
 		return new ResponseEntity<List<Quantity>>(quantityListResponse,HttpStatus.OK);
 		
@@ -57,7 +70,7 @@ public class QuantityController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<Quantity> AddQuantity(@RequestBody Quantity quantity) {
+	public ResponseEntity<Quantity> AddQuantity(@Validated(Quantity.New.class)@RequestBody Quantity quantity) {
 		
 		quantity.setDatemodified(commonService.setTimestamp());		
 		

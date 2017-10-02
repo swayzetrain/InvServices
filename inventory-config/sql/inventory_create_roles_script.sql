@@ -1,4 +1,7 @@
 insert into role (role_Name, role_Description)
+VALUES ("System_Admin", "Able to manage system");
+
+insert into role (role_Name, role_Description)
 VALUES ("Admin","Able to view, create, and configure");
 
 insert into role (role_Name, role_Description)

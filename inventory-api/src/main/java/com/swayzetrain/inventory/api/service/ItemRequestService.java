@@ -23,11 +23,11 @@ public class ItemRequestService {
 	@Autowired
 	private CommonService commonService;
 
-	public void PopulateUpdatedItem(Item newItem, Integer itemId) {
+	public void PopulateUpdatedItem(Item newItem, Integer itemId, Integer instanceid) {
 		
 		newItem.setItemid(itemId);
 		
-		Item oldItem = itemRepository.findByItemid(newItem.getItemid());
+		Item oldItem = itemRepository.findByItemidAndInstanceid(newItem.getItemid(), instanceid);
 		
 		if (null == newItem.getItemname()) {
 			newItem.setItemname(oldItem.getItemname());
@@ -36,6 +36,8 @@ public class ItemRequestService {
 		if (null == newItem.getCategoryid()) {
 			newItem.setCategoryid(oldItem.getCategoryid());
 		}
+		
+		newItem.setInstanceid(instanceid);
 		
 		if (null == newItem.getDatecreated()) {
 			newItem.setDatecreated(oldItem.getDatecreated());
@@ -47,9 +49,9 @@ public class ItemRequestService {
 		
 	}
 	
-	public boolean ItemExists (Integer itemId) {
+	public boolean ItemExists (Integer itemId, Integer instanceid) {
 		
-		Item item = itemRepository.findByItemid(itemId);
+		Item item = itemRepository.findByItemidAndInstanceid(itemId, instanceid);
 		
 		if (null == item) {
 			
@@ -60,9 +62,9 @@ public class ItemRequestService {
 		return true;
 	}
 	
-	public boolean CategoryExists (Integer categoryId) {
+	public boolean CategoryExists (Integer categoryId, Integer instanceid) {
 		
-		Category category = categoryRepository.findByCategoryid(categoryId);
+		Category category = categoryRepository.findByCategoryidAndInstanceid(categoryId, instanceid);
 		
 		if (null == category) {
 			
@@ -73,31 +75,31 @@ public class ItemRequestService {
 		return true;
 	}
 	
-	public List<Item> GetAllItemsFiltering(String name, Integer categoryId) {
+	public List<Item> GetAllItemsFiltering(String name, Integer categoryId, Integer instanceid) {
 		
 		if (null == name && null == categoryId) {
 			
-			return itemRepository.findAll();
+			return itemRepository.findByInstanceid(instanceid);
 			
 		}
 		
 		if (null != name && null != categoryId) {
 			
-			return itemRepository.findByItemnameAndCategoryid(name, categoryId);
+			return itemRepository.findByItemnameAndCategoryidAndInstanceid(name, categoryId, instanceid);
 			
 		}
 		
 		if (null != name) {
 			
-			return itemRepository.findByItemname(name);
+			return itemRepository.findByItemnameAndInstanceid(name, instanceid);
 			
 		}
 		
-		return itemRepository.findByCategoryid(categoryId);
+		return itemRepository.findByCategoryidAndInstanceid(categoryId, instanceid);
 		
 	}
 	
-	public void DeleteItemsFiltering(String name, Integer categoryId, ItemDeleteResponse itemDeleteResponse) {
+	public void DeleteItemsFiltering(String name, Integer categoryId, Integer instanceid, ItemDeleteResponse itemDeleteResponse) {
 		
 		if (null == name && null == categoryId) {
 			
@@ -105,33 +107,33 @@ public class ItemRequestService {
 			
 		}
 		
-		else if (null != name && null != categoryId) {
+		else if (null != name && null != categoryId && null != instanceid) {
 			
-			itemDeleteResponse.setItemsdeleted(itemRepository.findByItemnameAndCategoryid(name, categoryId));
-			itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemnameAndCategoryid(name, categoryId));
+			itemDeleteResponse.setItemsdeleted(itemRepository.findByItemnameAndCategoryidAndInstanceid(name, categoryId, instanceid));
+			itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemnameAndCategoryidAndInstanceid(name, categoryId, instanceid));
 			
 		}
 		
-		else if (null != name) {
+		else if (null != name && null != instanceid) {
 			
-			itemDeleteResponse.setItemsdeleted(itemRepository.findByItemname(name));
-			itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemname(name));
+			itemDeleteResponse.setItemsdeleted(itemRepository.findByItemnameAndInstanceid(name, instanceid));
+			itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemnameAndInstanceid(name, instanceid));
 			
 		}
 		
 		else {
 			
-			itemDeleteResponse.setItemsdeleted(itemRepository.findByCategoryid(categoryId));
-			itemDeleteResponse.setDeletedCount(itemRepository.deleteByCategoryid(categoryId));
+			itemDeleteResponse.setItemsdeleted(itemRepository.findByCategoryidAndInstanceid(categoryId, instanceid));
+			itemDeleteResponse.setDeletedCount(itemRepository.deleteByCategoryidAndInstanceid(categoryId, instanceid));
 			
 		}
 		
 	}
 	
-	public void DeleteItemById(Integer itemId, ItemDeleteResponse itemDeleteResponse) {
+	public void DeleteItemById(Integer itemId, Integer instanceid, ItemDeleteResponse itemDeleteResponse) {
 		
-		itemDeleteResponse.addItemsdeleted(itemRepository.findByItemid(itemId));
-		itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemid(itemId));
+		itemDeleteResponse.addItemsdeleted(itemRepository.findByItemidAndInstanceid(itemId, instanceid));
+		itemDeleteResponse.setDeletedCount(itemRepository.deleteByItemidAndInstanceid(itemId, instanceid));
 		
 	}
 	

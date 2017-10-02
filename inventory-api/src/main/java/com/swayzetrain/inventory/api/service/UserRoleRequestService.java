@@ -32,8 +32,8 @@ public class UserRoleRequestService {
 	@Autowired
 	private CommonService commonService;
 	
-	@Value("${default.new.userrole}")
-	private Integer defaultNewUserRole;
+	@Value("${default.newinstance.userrole}")
+	private Integer defaultNewInstanceUserRole;
 	
 	
 	public ResponseEntity<?> establishUserRoleObject (UserRolePostRequest userRolePostRequest) {
@@ -107,7 +107,7 @@ public class UserRoleRequestService {
 		return true;
 	}
 	
-	public boolean establishNewUserRole (String username) {
+	public boolean establishNewInstanceUserRole (String username, Integer instanceid) {
 		
 		//Set userID
 		User user = userRepository.findByUsername(username);
@@ -118,7 +118,8 @@ public class UserRoleRequestService {
 		
 		UserRole userRole = new UserRole();
 		userRole.setUserid(user.getUserid());
-		userRole.setRoleid(defaultNewUserRole);
+		userRole.setInstanceid(instanceid);
+		userRole.setRoleid(defaultNewInstanceUserRole);
 		userRole.setDatecreated(commonService.setTimestamp());
 		userRole.setDatemodified(commonService.setTimestamp());
 		

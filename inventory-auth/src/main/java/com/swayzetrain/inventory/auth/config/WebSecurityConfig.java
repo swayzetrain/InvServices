@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		                 .addFilterBefore(new JWTLoginFilter("/api/v1/accounts", authenticationManager(), jwtSecret, jwtTTL),
 		                         UsernamePasswordAuthenticationFilter.class)
 		                 // And filter other requests to check the presence of JWT in header
-		                 .addFilterBefore(new JWTAuthenticationFilter(jwtSecret, userDetailsService),
+		                 .addFilterBefore(new JWTAuthenticationFilter(jwtSecret, jwtTTL, userDetailsService),
 		                         UsernamePasswordAuthenticationFilter.class);
 		
 	}

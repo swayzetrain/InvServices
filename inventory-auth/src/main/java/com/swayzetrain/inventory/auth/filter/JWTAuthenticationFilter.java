@@ -17,11 +17,13 @@ import java.io.IOException;
 public class JWTAuthenticationFilter extends GenericFilterBean {
 	
 	private String jwtSecret;
+	private long jwtTTL;
 	private UserDetailsServiceImplementation userDetailsService;
 
-    public JWTAuthenticationFilter(String jwtSecret, UserDetailsServiceImplementation userDetailsService) {
+    public JWTAuthenticationFilter(String jwtSecret, Long jwtTTL, UserDetailsServiceImplementation userDetailsService) {
 		
     	this.setJwtSecret(jwtSecret);
+    	this.setJwtTTL(jwtTTL);
     	this.setUserDetailsService(userDetailsService);
     	
 	}
@@ -31,10 +33,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
                          ServletResponse response,
                          FilterChain filterChain)
             throws IOException, ServletException {
+		
         Authentication authentication = TokenAuthenticationService.getAuthentication((HttpServletRequest)request, this.jwtSecret, userDetailsService);
 
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
+        
         filterChain.doFilter(request,response);
     }
 
@@ -44,6 +48,14 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
 	public void setJwtSecret(String jwtSecret) {
 		this.jwtSecret = jwtSecret;
+	}
+
+	public Long getJwtTTL() {
+		return jwtTTL;
+	}
+
+	public void setJwtTTL(Long jwtTTL) {
+		this.jwtTTL = jwtTTL;
 	}
 
 	public UserDetailsServiceImplementation getUserDetailsService() {

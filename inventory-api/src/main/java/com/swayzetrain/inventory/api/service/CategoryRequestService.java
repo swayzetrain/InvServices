@@ -18,43 +18,45 @@ public class CategoryRequestService {
 	@Autowired
 	private CommonService commonService;
 	
-	public List<Category> GetAllCategoriesFiltering(String name) {
+	public List<Category> GetAllCategoriesFiltering(String name, Integer instanceid) {
 		
 		if(null == name) {
 			
-			return categoryRepository.findAll();
+			return categoryRepository.findByInstanceid(instanceid);
 			
 		}
 		
-		return categoryRepository.findByCategoryname(name);
+		return categoryRepository.findByCategorynameAndInstanceid(name, instanceid);
 		
 	}
 
-	public void DeleteCategoryById(Integer categoryId, CategoryDeleteResponse categoryDeleteResponse) {
+	public void DeleteCategoryById(Integer categoryId, Integer instanceid, CategoryDeleteResponse categoryDeleteResponse) {
 		
-		categoryDeleteResponse.addCategoriesdeleted(categoryRepository.findByCategoryid(categoryId));
-		categoryDeleteResponse.setDeletedCount(categoryRepository.deleteByCategoryid(categoryId));
-		
-	}
-	
-	public void DeleteCategoriesFiltering(String name, CategoryDeleteResponse categoryDeleteResponse) {
-		
-		categoryDeleteResponse.setCategoriesDeleted(categoryRepository.findByCategoryname(name));
-		categoryDeleteResponse.setDeletedCount(categoryRepository.deleteByCategoryname(name));
+		categoryDeleteResponse.addCategoriesdeleted(categoryRepository.findByCategoryidAndInstanceid(categoryId, instanceid));
+		categoryDeleteResponse.setDeletedCount(categoryRepository.deleteByCategoryidAndInstanceid(categoryId, instanceid));
 		
 	}
 	
-	public void PopulateUpdatedCategory(Category newCategory, Integer categoryId) {
+	public void DeleteCategoriesFiltering(String name, Integer instanceid, CategoryDeleteResponse categoryDeleteResponse) {
+		
+		categoryDeleteResponse.setCategoriesDeleted(categoryRepository.findByCategorynameAndInstanceid(name, instanceid));
+		categoryDeleteResponse.setDeletedCount(categoryRepository.deleteByCategorynameAndInstanceid(name, instanceid));
+		
+	}
+	
+	public void PopulateUpdatedCategory(Category newCategory, Integer categoryId, Integer instanceid) {
 		
 		newCategory.setCategoryid(categoryId);
 		
-		Category oldCategory = categoryRepository.findByCategoryid(newCategory.getCategoryid());
+		Category oldCategory = categoryRepository.findByCategoryidAndInstanceid(newCategory.getCategoryid(), instanceid);
 		
 		if(null == newCategory.getCategoryname()) {
 			
 			newCategory.setCategoryname(oldCategory.getCategoryname());
 			
 		}
+		
+		newCategory.setInstanceid(instanceid);
 		
 		if(null == newCategory.getDatecreated()) {
 			
@@ -70,9 +72,9 @@ public class CategoryRequestService {
 		
 	}
 	
-	public boolean CategoryExists(Integer categoryId) {
+	public boolean CategoryExists(Integer categoryId, Integer instanceid) {
 		
-		if (null == categoryRepository.findByCategoryid(categoryId)) {
+		if (null == categoryRepository.findByCategoryidAndInstanceid(categoryId, instanceid)) {
 			
 			return false;
 			

@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,20 +21,25 @@ public class Quantity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "quantity_Id")
+	@Null(groups = {New.class}, message = "quantityid must be null for this request")
 	private Integer quantityid;
 	
 	@Column(name = "item_Id")
+	@NotNull(groups = {New.class}, message = "itemid is required for this request")
 	private Integer itemid;
 	
 	@Column(name = "quantity")
+	@NotNull(groups = {New.class}, message = "quantity is required for this request")
 	private Integer quantity;
 	
 	@Column(name = "quantity_Type")
 	@Size(min=0, max=50)
+	@NotNull(groups = {New.class}, message = "quantitytype is required for this request")
 	private String quantitytype;
 	
 	@Column(name = "date_Modified", nullable = false)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "EST")
+	@Null(groups = {New.class}, message = "datemodified must be null for this request")
 	private Timestamp datemodified;
 
 	public Integer getQuantityid() {
@@ -73,5 +80,9 @@ public class Quantity {
 
 	public void setDatemodified(Timestamp dateModified) {
 		this.datemodified = dateModified;
+	}
+	
+	public interface New {
+		
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import com.swayzetrain.inventory.api.model.ItemDeleteResponse;
 import com.swayzetrain.inventory.api.model.MessageResponse;
 import com.swayzetrain.inventory.api.service.CommonService;
 import com.swayzetrain.inventory.api.service.ItemRequestService;
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Item;
 import com.swayzetrain.inventory.common.repository.ItemRepository;
 
@@ -41,18 +43,19 @@ public class ItemController {
     
 	@RequestMapping(method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
-    public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId) {
+    public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId,
+    		@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId);		
+		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId, userAuthorizationDetails.getInstanceid());		
         
 		return new ResponseEntity<List<Item>>(itemList, HttpStatus.OK);
     }
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<Item>  getItemById(@PathVariable(value="itemId") Integer itemId) {
+	public ResponseEntity<Item>  getItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		Item itemResponse = itemRepository.findByItemid(itemId);
+		Item itemResponse = itemRepository.findByItemidAndInstanceid(itemId, userAuthorizationDetails.getInstanceid());
 		
 		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
 	}
@@ -60,9 +63,9 @@ public class ItemController {
 	
 	@RequestMapping(method = RequestMethod.POST)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item) {
+	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		if (!itemRequestService.CategoryExists(item.getCategoryid())) {
+		if (!itemRequestService.CategoryExists(item.getCategoryid(), userAuthorizationDetails.getInstanceid())) {
 			
 			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.CATEGORY_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
 			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
@@ -71,6 +74,8 @@ public class ItemController {
 		
 		item.setDatecreated(commonService.setTimestamp());
 		item.setDatemodified(commonService.setTimestamp());
+		item.setCreationuserid(userAuthorizationDetails.getUserid());
+		item.setInstanceid(userAuthorizationDetails.getInstanceid());
 		
 		Item itemResponse = itemRepository.save(item);
 		
@@ -81,11 +86,11 @@ public class ItemController {
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.DELETE)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItemById(@PathVariable(value="itemId") Integer itemId) {
+	public ResponseEntity<ItemDeleteResponse> deleteItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
 		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
 		
-		itemRequestService.DeleteItemById(itemId, itemDeleteResponse);
+		itemRequestService.DeleteItemById(itemId, userAuthorizationDetails.getInstanceid(), itemDeleteResponse);
 		
 		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
 	
@@ -94,11 +99,12 @@ public class ItemController {
 	@RequestMapping(method = RequestMethod.DELETE)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId) {
+	public ResponseEntity<ItemDeleteResponse> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId,
+			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
 		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
 		
-		itemRequestService.DeleteItemsFiltering(itemName, categoryId, itemDeleteResponse);
+		itemRequestService.DeleteItemsFiltering(itemName, categoryId, userAuthorizationDetails.getInstanceid(), itemDeleteResponse);
 		
 		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
 		
@@ -106,16 +112,17 @@ public class ItemController {
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.PUT)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @Validated(Item.Existing.class) @RequestBody Item item) {
+	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @Validated(Item.Existing.class) @RequestBody Item item,
+			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		if (!itemRequestService.ItemExists(itemId)) {
+		if (!itemRequestService.ItemExists(itemId, userAuthorizationDetails.getInstanceid())) {
 			
 			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.ITEM_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
 			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 			
 		}
 		
-		itemRequestService.PopulateUpdatedItem(item, itemId);
+		itemRequestService.PopulateUpdatedItem(item, itemId, userAuthorizationDetails.getInstanceid());
 		
 		Item itemResponse = itemRepository.save(item);
 		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
