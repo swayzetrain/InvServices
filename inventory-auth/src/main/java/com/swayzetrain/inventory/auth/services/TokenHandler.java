@@ -32,8 +32,6 @@ public class TokenHandler {
 		
 		Integer instance = (Integer) claims.getBody().get(Constants.TOKEN_INSTANCE_STRING);
 		
-		System.out.println("TokenHandler Parse Instance: " + instance);
-		
 		return instance;
 	}
 	

@@ -45,14 +45,10 @@ public class TokenAuthenticationService {
             if(null == instanceid) {
             	
             	String uri = request.getServletPath();
-            	System.out.println("getAuth URI Path: " + uri); 
             	
-            	if(uri.startsWith("/api/v1/instances/")) {
+            	if(uri.startsWith(Constants.INSTANCE_BASE_URI)) {
             		
-            		System.out.println("getAuth match on uri starts with");
-            		
-            		instanceid = Integer.parseInt(uri.replaceAll("/api/v1/instances/", ""));
-            		System.out.println("getAuth converted instance id: " + instanceid);
+            		instanceid = Integer.parseInt(uri.replaceAll(Constants.INSTANCE_BASE_URI, ""));
             	
             	}
             	
@@ -60,16 +56,12 @@ public class TokenAuthenticationService {
             
             if (null != username && null != instanceid) {
             	
-            	System.out.println("TokenAService: Adding with username and instanceid");
-            	
             	UserAuthorizationDetails userAuthorizationDetails = (UserAuthorizationDetails) userDetailsService.loadUserByUsernameAndInstanceid(username, instanceid);
             	
             	return new UsernamePasswordAuthenticationToken(userAuthorizationDetails, null, userAuthorizationDetails.getAuthorities());
             }
             
             if (null != username && null == instanceid) {
-            	
-            	System.out.println("TokenAService: Adding with username only");
             	
             	UserAuthorizationDetails userAuthorizationDetails = (UserAuthorizationDetails) userDetailsService.loadUserByUsername(username);
             	

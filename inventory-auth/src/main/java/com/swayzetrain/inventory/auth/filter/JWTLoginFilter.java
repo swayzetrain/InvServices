@@ -57,8 +57,6 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             HttpServletResponse res, FilterChain chain,
             Authentication auth) throws IOException, ServletException {
     	
-    	System.out.println("Entering JWTLoginFilter successfulAuthentication");
-    	
         TokenAuthenticationService.addAuthentication(res, auth.getName(), this.jwtSecret, this.jwtTTL);
         
     }
