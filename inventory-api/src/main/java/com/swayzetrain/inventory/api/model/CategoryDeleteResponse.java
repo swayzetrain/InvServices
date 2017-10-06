@@ -14,6 +14,13 @@ public class CategoryDeleteResponse {
 		
 	}
 	
+	public CategoryDeleteResponse(Integer deletedCount, List<Category> categoriesDeleted) {
+		
+		this.deletedCount = deletedCount;
+		this.categoriesDeleted = categoriesDeleted;
+		
+	}
+	
 	public Integer getDeletedCount() {
 		return deletedCount;
 	}
