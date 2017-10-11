@@ -47,6 +47,8 @@ public class CategoryWriter {
 			
 		}
 		
+		newCategory.setCategoryid(oldCategoryId);
+		
 		if(null == newCategory.getCategoryname()) {
 			
 			newCategory.setCategoryname(oldCategory.getCategoryname());

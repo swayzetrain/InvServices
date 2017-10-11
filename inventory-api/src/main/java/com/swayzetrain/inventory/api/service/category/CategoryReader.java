@@ -12,7 +12,7 @@ import com.swayzetrain.inventory.common.model.Category;
 import com.swayzetrain.inventory.common.repository.CategoryRepository;
 
 @Service
-public class CategoryRetriever {
+public class CategoryReader {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;

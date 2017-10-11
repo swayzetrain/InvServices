@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class TokenAuthenticationService {
-    
+	
     private static TokenHandler tokenHandler = new TokenHandler();
 
     public static void addAuthentication(HttpServletResponse response, String username, String jwtSecret, long jwtTTL) {
@@ -32,6 +32,12 @@ public class TokenAuthenticationService {
     		response.setStatus(500);
     	}
 
+    }
+    
+    public String addInstanceAuthentication(String username, Integer instanceId, String jwtSecret, long jwtTTL) {
+    	
+    	return tokenHandler.GenerateJWT(username, instanceId, jwtSecret, jwtTTL);
+    	
     }
 
     public static Authentication getAuthentication(HttpServletRequest request, String jwtSecret, UserDetailsServiceImplementation userDetailsService) {

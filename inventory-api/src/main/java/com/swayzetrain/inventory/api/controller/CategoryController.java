@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.swayzetrain.inventory.api.service.category.CategoryRemover;
-import com.swayzetrain.inventory.api.service.category.CategoryRetriever;
+import com.swayzetrain.inventory.api.service.category.CategoryReader;
 import com.swayzetrain.inventory.api.service.category.CategoryWriter;
 import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Category;
@@ -32,7 +32,7 @@ public class CategoryController {
 	private CategoryRemover categoryRemover;
 	
 	@Autowired
-	private CategoryRetriever categoryRetriever;
+	private CategoryReader categoryRetriever;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})

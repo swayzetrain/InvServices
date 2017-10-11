@@ -13,6 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long>{
 	ArrayList<Item> findByItemnameAndCategoryidAndInstanceid(String itemname, Integer categoryid, Integer instanceid);
 	ArrayList<Item> findByItemnameAndInstanceid(String itemname, Integer instanceid);
 	ArrayList<Item> findByCategoryidAndInstanceid(Integer categoryid, Integer instanceid);
+	Item findByItemidAndItemnameAndInstanceid(Integer itemid, String itemname, Integer instanceid);
 	
 	Integer deleteByItemidAndInstanceid(Integer itemid, Integer instanceid);
 	Integer deleteByItemnameAndCategoryidAndInstanceid(String itemname, Integer categoryid, Integer instanceid);

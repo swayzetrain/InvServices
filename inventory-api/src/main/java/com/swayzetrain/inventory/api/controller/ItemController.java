@@ -1,11 +1,7 @@
 package com.swayzetrain.inventory.api.controller;
 
-import java.util.List;
-
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,46 +14,39 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.swayzetrain.inventory.api.enums.Constants;
-import com.swayzetrain.inventory.api.model.ItemDeleteResponse;
-import com.swayzetrain.inventory.api.model.MessageResponse;
-import com.swayzetrain.inventory.api.service.CommonService;
-import com.swayzetrain.inventory.api.service.ItemRequestService;
+import com.swayzetrain.inventory.api.service.item.ItemRemover;
+import com.swayzetrain.inventory.api.service.item.ItemReader;
+import com.swayzetrain.inventory.api.service.item.ItemWriter;
 import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Item;
-import com.swayzetrain.inventory.common.repository.ItemRepository;
 
 @RestController
 @RequestMapping("/api/v1/items")
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class ItemController {
-
-	@Autowired
-	private ItemRepository itemRepository;
 	
 	@Autowired
-	private ItemRequestService itemRequestService;
+	private ItemWriter itemWriter;
 	
 	@Autowired
-	private CommonService commonService;
+	private ItemRemover itemRemover;
+	
+	@Autowired ItemReader itemRetriever;
     
 	@RequestMapping(method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
-    public ResponseEntity<List<Item>> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId,
+    public ResponseEntity<?> getAllItems(@RequestParam(value="itemname", required = false) String itemName, @RequestParam(value="categoryid", required = false) Integer categoryId,
     		@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		List<Item> itemList = itemRequestService.GetAllItemsFiltering(itemName, categoryId, userAuthorizationDetails.getInstanceid());		
-        
-		return new ResponseEntity<List<Item>>(itemList, HttpStatus.OK);
+		return 	itemRetriever.GetItems(null, itemName, categoryId, userAuthorizationDetails);
+		
     }
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.GET)
 	@Secured({"ROLE_Viewer","ROLE_Creator","ROLE_Admin"})
-	public ResponseEntity<Item>  getItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
+	public ResponseEntity<?>  getItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		Item itemResponse = itemRepository.findByItemidAndInstanceid(itemId, userAuthorizationDetails.getInstanceid());
-		
-		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
+		return itemRetriever.GetItems(itemId, null, null, userAuthorizationDetails);
 	}
 	
 	
@@ -65,48 +54,26 @@ public class ItemController {
 	@Secured({"ROLE_Creator","ROLE_Admin"})
 	public ResponseEntity<?> addItem(@Validated(Item.New.class) @RequestBody Item item, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		if (!itemRequestService.CategoryExists(item.getCategoryid(), userAuthorizationDetails.getInstanceid())) {
-			
-			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.CATEGORY_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
-			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
-			
-		}
-		
-		item.setDatecreated(commonService.setTimestamp());
-		item.setDatemodified(commonService.setTimestamp());
-		item.setCreationuserid(userAuthorizationDetails.getUserid());
-		item.setInstanceid(userAuthorizationDetails.getInstanceid());
-		
-		Item itemResponse = itemRepository.save(item);
-		
-		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
+		return itemWriter.SaveNewItem(item, userAuthorizationDetails);
 		
 	}
 	
 	@RequestMapping(value = "/{itemId}", method = RequestMethod.DELETE)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
+	public ResponseEntity<?> deleteItemById(@PathVariable(value="itemId") Integer itemId, @AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
-		
-		itemRequestService.DeleteItemById(itemId, userAuthorizationDetails.getInstanceid(), itemDeleteResponse);
-		
-		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
+		return itemRemover.DeleteItemById(itemId, userAuthorizationDetails);
 	
 	}
 	
 	@RequestMapping(method = RequestMethod.DELETE)
 	@Secured({"ROLE_Creator","ROLE_Admin"})
 	@Transactional
-	public ResponseEntity<ItemDeleteResponse> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId,
+	public ResponseEntity<?> deleteItem(@RequestParam(value="itemName", required = false) String itemName, @RequestParam(value="categoryId", required = false) Integer categoryId,
 			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		ItemDeleteResponse itemDeleteResponse = new ItemDeleteResponse();
-		
-		itemRequestService.DeleteItemsFiltering(itemName, categoryId, userAuthorizationDetails.getInstanceid(), itemDeleteResponse);
-		
-		return new ResponseEntity<ItemDeleteResponse>(itemDeleteResponse, HttpStatus.OK);
+		return itemRemover.DeleteItemByOther(itemName, categoryId, userAuthorizationDetails);
 		
 	}
 	
@@ -115,17 +82,7 @@ public class ItemController {
 	public ResponseEntity<?> updateItemById(@PathVariable(value = "itemId") Integer itemId, @Validated(Item.Existing.class) @RequestBody Item item,
 			@AuthenticationPrincipal UserAuthorizationDetails userAuthorizationDetails) {
 		
-		if (!itemRequestService.ItemExists(itemId, userAuthorizationDetails.getInstanceid())) {
-			
-			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.ITEM_NOT_FOUND_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.NOT_FOUND);
-			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
-			
-		}
-		
-		itemRequestService.PopulateUpdatedItem(item, itemId, userAuthorizationDetails.getInstanceid());
-		
-		Item itemResponse = itemRepository.save(item);
-		return new ResponseEntity<Item>(itemResponse, HttpStatus.OK);
+		return itemWriter.updateExisitingItem(itemId, item, userAuthorizationDetails);
 		
 	}
 

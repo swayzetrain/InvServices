@@ -1,17 +1,23 @@
 package com.swayzetrain.inventory.api.model;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import com.swayzetrain.inventory.common.model.Item;
 
 public class ItemDeleteResponse {
 
 	private Integer deletedCount;
-	private List<Item> itemsdeleted;
+	private ArrayList<Item> itemsDeleted;
 	
 	public ItemDeleteResponse()
 	{
 		
+	}
+	
+	public ItemDeleteResponse(Integer deletedCount, ArrayList<Item> itemsDeleted) {
+		
+		this.deletedCount = deletedCount;
+		this.itemsDeleted = itemsDeleted;
 	}
 	
 	public Integer getDeletedCount() {
@@ -20,16 +26,16 @@ public class ItemDeleteResponse {
 	public void setDeletedCount(Integer deletedCount) {
 		this.deletedCount = deletedCount;
 	}
-	public List<Item> getItemsdeleted() {
-		return itemsdeleted;
+	public ArrayList<Item> getItemsDeleted() {
+		return itemsDeleted;
 	}
-	public void setItemsdeleted(List<Item> itemArray) {
-		this.itemsdeleted = itemArray;
+	public void setItemsDeleted(ArrayList<Item> itemArray) {
+		this.itemsDeleted = itemArray;
 	}
 	
-	public void addItemsdeleted(Item item) {
+	public void addItemsDeleted(Item item) {
 		
-		this.itemsdeleted.add(item);
+		this.itemsDeleted.add(item);
 		
 	}
 	
