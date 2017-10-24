@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.api.service;
+package com.swayzetrain.inventory.api.service.userrole;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,21 +10,22 @@ import org.springframework.stereotype.Service;
 import com.swayzetrain.inventory.api.enums.Constants;
 import com.swayzetrain.inventory.api.model.MessageResponse;
 import com.swayzetrain.inventory.api.model.UserRolePostRequest;
-import com.swayzetrain.inventory.common.model.Role;
+import com.swayzetrain.inventory.api.service.ApiCommonService;
+import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.User;
 import com.swayzetrain.inventory.common.model.UserRole;
-import com.swayzetrain.inventory.common.repository.RoleRepository;
 import com.swayzetrain.inventory.common.repository.UserRepository;
 import com.swayzetrain.inventory.common.repository.UserRoleRepository;
+import com.swayzetrain.inventory.common.service.CommonService;
 
 @Service
-public class UserRoleRequestService {
-
-	@Autowired
-	private UserRepository userRepository;
+public class UserRoleWriter {
+	
+	@Value("${default.newinstance.userrole}")
+	private Integer defaultNewInstanceUserRole;
 	
 	@Autowired
-	private RoleRepository roleRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
 	private UserRoleRepository userRoleRepository;
@@ -32,79 +33,39 @@ public class UserRoleRequestService {
 	@Autowired
 	private CommonService commonService;
 	
-	@Value("${default.newinstance.userrole}")
-	private Integer defaultNewInstanceUserRole;
+	@Autowired
+	private ApiCommonService apiCommonService;
 	
-	
-	public ResponseEntity<?> establishUserRoleObject (UserRolePostRequest userRolePostRequest) {
+	public ResponseEntity<?> AddUserRole(UserAuthorizationDetails userAuthorizationDetails, UserRolePostRequest userRolePostRequest) {
 		
 		//check if UserId is set. If not try to set it with username
-		if (!convertUsernameToUserId(userRolePostRequest)) {
-			
+		if (!apiCommonService.convertUsernameToUserId(userRolePostRequest)) {
+					
 			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_PROVIDED, MediaType.APPLICATION_JSON, HttpStatus.BAD_REQUEST);
 			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
-			
+					
 		}
-		
+				
 		// Check if RoleId is set. If not try to set it with rolename
-		if (!convertRoleNameToRoleId(userRolePostRequest)) {
-			
+		if (!apiCommonService.convertRoleNameToRoleId(userRolePostRequest)) {
+					
 			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.ROLE_NOT_PROVIDED, MediaType.APPLICATION_JSON, HttpStatus.BAD_REQUEST);
 			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
-				
+						
 		}
 		
-		return null;
-		
-	}
-	
-	public boolean convertUsernameToUserId(UserRolePostRequest userRolePostRequest) {
-				
-		if (null == userRolePostRequest.getUserid()) {
-				
-			if (null == userRolePostRequest.getUsername()) {
-								
-				return false;
-								
-			}
-					
-			User user = userRepository.findByUsername(userRolePostRequest.getUsername());
-			userRolePostRequest.setUserid(user.getUserid());
-				
-		}
-				
-		return true;
-	}
-
-	public boolean convertRoleNameToRoleId(UserRolePostRequest userRolePostRequest) {
+		if (null != userRoleRepository.findByUseridAndInstanceid(userRolePostRequest.getUserid(), userAuthorizationDetails.getInstanceid())) {
 			
-		if (null == userRolePostRequest.getRoleid()) {
-				
-			if (null == userRolePostRequest.getRolename()) {
-				
-				return false;
-				
-			}
-			
-			Role role = roleRepository.findByRolename(userRolePostRequest.getRolename());
-			userRolePostRequest.setRoleid(role.getRoleid());
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USERROLE_EXISTS_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.CONFLICT);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 			
 		}
-			
-		return true;
-	}
-	
-	
-	//This needs to be moved to a validation class at somepoint
-	public boolean checkUserRoleExists(int userid) {
 		
-		UserRole userRole = userRoleRepository.findByUserid(userid);
+		//Convert userRolePostRequest to UserRole and store it in the database
+		UserRole newUserRole = new UserRole(userRolePostRequest.getUserid(), userRolePostRequest.getRoleid(), userAuthorizationDetails.getInstanceid(), commonService.setTimestamp(), commonService.setTimestamp());
 		
-		if (null == userRole) {
-			return false;
-		}
+		return new ResponseEntity<>(userRoleRepository.save(newUserRole), HttpStatus.OK);
 		
-		return true;
 	}
 	
 	public boolean establishNewInstanceUserRole (String username, Integer instanceid) {

@@ -1,4 +1,4 @@
-package com.swayzetrain.inventory.api.service;
+package com.swayzetrain.inventory.common.service;
 
 import java.sql.Timestamp;
 

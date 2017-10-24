@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.swayzetrain.inventory.api.service.CommonService;
-import com.swayzetrain.inventory.api.service.UserRoleRequestService;
+import com.swayzetrain.inventory.api.service.userrole.UserRoleWriter;
 import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Instance;
 import com.swayzetrain.inventory.common.repository.InstanceRepository;
+import com.swayzetrain.inventory.common.service.CommonService;
 
 @Service
 public class InstanceWriter {
@@ -21,7 +21,7 @@ public class InstanceWriter {
 	private CommonService commonService;
 	
 	@Autowired
-	private UserRoleRequestService userRoleRequestService;
+	private UserRoleWriter userRoleWriter;
 	
 	public ResponseEntity<?> SaveNewInstance(Instance instance, UserAuthorizationDetails userAuthorizationDetails) {
 		
@@ -31,7 +31,7 @@ public class InstanceWriter {
 		
 		Instance instanceResponse = instanceRepository.save(instance);
 		
-		userRoleRequestService.establishNewInstanceUserRole(userAuthorizationDetails.getUsername(), instanceResponse.getInstanceid());
+		userRoleWriter.establishNewInstanceUserRole(userAuthorizationDetails.getUsername(), instanceResponse.getInstanceid());
 		
 		return new ResponseEntity<Instance>(instanceResponse, HttpStatus.OK);
 		

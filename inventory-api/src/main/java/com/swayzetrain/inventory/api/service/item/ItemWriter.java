@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.swayzetrain.inventory.api.enums.Constants;
 import com.swayzetrain.inventory.api.model.MessageResponse;
-import com.swayzetrain.inventory.api.service.CommonService;
 import com.swayzetrain.inventory.auth.model.UserAuthorizationDetails;
 import com.swayzetrain.inventory.common.model.Item;
 import com.swayzetrain.inventory.common.repository.CategoryRepository;
 import com.swayzetrain.inventory.common.repository.ItemRepository;
+import com.swayzetrain.inventory.common.service.CommonService;
 
 @Service
 public class ItemWriter {
