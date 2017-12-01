@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.swayzetrain.inventory.auth.enums.Constants;
+import com.swayzetrain.inventory.common.model.UserRole;
 
 public class UserAuthorizationDetails implements UserDetails {
 	
@@ -19,19 +20,20 @@ public class UserAuthorizationDetails implements UserDetails {
 	private boolean enabled;
 	private String rolename;
 	private Integer instanceid;
+	private List<UserRole> userRoleList;
 	
 	public UserAuthorizationDetails() {
 		
 	}
 	
-	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled, String rolename) {
+	public UserAuthorizationDetails(Integer userid, String username, String password, boolean enabled, List<UserRole> userRoleList) {
 		// Used for an established user
 		super();
 		this.userid = userid;
 		this.username = username;
 		this.password = password;
 		this.enabled = enabled;
-		this.rolename = rolename;
+		this.setUserRoleList(userRoleList);
 		
 	}
 	
@@ -99,11 +101,23 @@ public class UserAuthorizationDetails implements UserDetails {
 		this.instanceid = instanceid;
 	}
 
+	public List<UserRole> getUserRoleList() {
+		return userRoleList;
+	}
+
+	public void setUserRoleList(List<UserRole> userRoleList) {
+		this.userRoleList = userRoleList;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
 		
-		list.add(new SimpleGrantedAuthority(Constants.ROLE_PREFIX + rolename));
+		if(null != rolename) {
+			
+			list.add(new SimpleGrantedAuthority(Constants.ROLE_PREFIX + rolename));
+			
+		}
 		
 		return list;
 	}

@@ -37,7 +37,7 @@ public class UserRoleReader {
 		
 		else {
 			
-			return new ResponseEntity<UserRole>(userRoleRepository.findByUserid(userAuthorizationDetails.getUserid()), HttpStatus.OK);
+			return new ResponseEntity<List<UserRole>>(userRoleRepository.findByUserid(userAuthorizationDetails.getUserid()), HttpStatus.OK);
 			
 		}
 		
@@ -60,16 +60,29 @@ public class UserRoleReader {
 	
 	public ResponseEntity<?> GetUserRoleByRole(UserAuthorizationDetails userAuthorizationDetails, Integer roleId) {
 		
-		UserRole userRole = userRoleRepository.findByRoleid(roleId);
+		List<UserRole> userRoleList = userRoleRepository.findByRoleid(roleId);
 		
-		if(userRole.getUserid() != userAuthorizationDetails.getUserid() || userRole.getInstanceid() != userAuthorizationDetails.getInstanceid()) {
+		int foundUser = -1;
+		
+		for(int i = 0; i < userRoleList.size(); i++) {
+			
+			if (userRoleList.get(i).getUserid() == userAuthorizationDetails.getUserid() || userRoleList.get(i).getInstanceid() == userAuthorizationDetails.getInstanceid()) {
+				
+				foundUser = i;
+				break;
+				
+			}
+			
+		}
+		
+		if(foundUser == -1) {
 			
 			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.USER_NOT_AUTHORIZED, MediaType.APPLICATION_JSON, HttpStatus.UNAUTHORIZED);
 			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 			
 		}
 		
-		return new ResponseEntity<UserRole>(userRole, HttpStatus.OK);
+		return new ResponseEntity<UserRole>(userRoleList.get(foundUser), HttpStatus.OK);
 		
 	}
 	

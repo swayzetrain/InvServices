@@ -7,3 +7,4 @@
 .settings
 classes/
 target/
+*.springBeans

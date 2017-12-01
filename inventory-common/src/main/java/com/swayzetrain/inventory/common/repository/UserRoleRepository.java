@@ -10,8 +10,8 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long>{
 
 	List<UserRole> findByInstanceid(Integer instanceid);
 	UserRole findByUserroleid(Integer userroleid);
-	UserRole findByRoleid(Integer roleid);
-	UserRole findByUserid(Integer userid);
+	List<UserRole> findByRoleid(Integer roleid);
+	List<UserRole> findByUserid(Integer userid);
 	UserRole findByUseridAndInstanceid(Integer userid, Integer instanceid);
 	
 }

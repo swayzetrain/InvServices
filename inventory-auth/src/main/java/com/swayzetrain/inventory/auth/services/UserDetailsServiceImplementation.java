@@ -1,5 +1,8 @@
 package com.swayzetrain.inventory.auth.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -90,21 +93,23 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 		
 	}
 	
+	// Needs some work here with the conversion to List<UserRole>
+	
 	public UserAuthorizationDetails loadRoles(User user, Integer instanceId) {
 		
 		UserAuthorizationDetails userAuthorizationDetails = null;
-		UserRole foundUserRole = null;
+		List<UserRole> foundUserRoleList = new ArrayList<UserRole>();
 		
 		if (null != instanceId) {
-			foundUserRole = userRoleRepository.findByUseridAndInstanceid(user.getUserid(),instanceId);
+			foundUserRoleList.add(userRoleRepository.findByUseridAndInstanceid(user.getUserid(),instanceId));
 		}
 		
 		else {
-			foundUserRole = userRoleRepository.findByUserid(user.getUserid());
+			foundUserRoleList = userRoleRepository.findByUserid(user.getUserid());
 		}
 		
 	    
-	    if(null == foundUserRole) {
+	    if(foundUserRoleList.size() == 0) {
 	    	
 	    	userAuthorizationDetails = new UserAuthorizationDetails(user.getUserid(), user.getUsername(), user.getPassword(), user.isEnabled());
 
@@ -112,11 +117,9 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
 	    	
 	    }
 	    
-	    Role foundRole = roleRepository.findByRoleid(foundUserRole.getRoleid());
-	    
-	    if (null != foundRole) {
+	    else {
 	    	
-	    	userAuthorizationDetails = new UserAuthorizationDetails(user.getUserid(), user.getUsername(), user.getPassword(), user.isEnabled(), foundRole.getRolename());
+	    	userAuthorizationDetails = new UserAuthorizationDetails(user.getUserid(), user.getUsername(), user.getPassword(), user.isEnabled(), foundUserRoleList);
 	    	
 	    }
 	    

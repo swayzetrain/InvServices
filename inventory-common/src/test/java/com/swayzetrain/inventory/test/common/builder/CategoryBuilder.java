@@ -3,14 +3,17 @@ package com.swayzetrain.inventory.test.common.builder;
 import java.sql.Timestamp;
 
 import com.swayzetrain.inventory.common.model.Category;
+import com.swayzetrain.inventory.common.service.CommonService;
 
 public class CategoryBuilder {
+	
+	CommonService commonService = new CommonService();
 	
 	private String categoryName = "category";
 	private Integer instanceId = 0;
 	private Integer creationUserId = 0;
-	private Timestamp dateCreated = new java.sql.Timestamp(new java.util.Date().getTime());
-	private Timestamp dateModified = new java.sql.Timestamp(new java.util.Date().getTime());
+	private Timestamp dateCreated = commonService.setTimestamp();
+	private Timestamp dateModified = commonService.setTimestamp();
 	
 	public CategoryBuilder addCategoryName(String name) {
 		

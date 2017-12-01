@@ -106,6 +106,21 @@ public class Item {
 		this.datemodified = dateModified;
 	}
 	
+	public Item() {
+		
+	}
+	
+	public Item(String itemName, Integer categoryId, Integer instanceId, Integer creationUserId, Timestamp dateCreated, Timestamp dateModified) {
+		
+		this.itemname = itemName;
+		this.categoryid = categoryId;
+		this.instanceid = instanceId;
+		this.creationuserid = creationUserId;
+		this.datecreated = dateCreated;
+		this.datemodified = dateModified;
+		
+	}
+	
 	public interface New {
 		
 	}

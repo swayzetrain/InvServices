@@ -49,6 +49,15 @@ public class Role {
 		this.roledescription = roledescription;
 	}
 	
+	public Role() {
+		
+	}
 	
+	public Role(String roleName, String roleDescription) {
+		
+		this.rolename = roleName;
+		this.roledescription = roleDescription;
+		
+	}
 	
 }

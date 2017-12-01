@@ -10,6 +10,6 @@ import com.swayzetrain.inventory.common.model.Instance;
 public interface InstanceRepository extends JpaRepository<Instance,Long> {
 	
 	Instance findByInstanceid(Integer instanceid);
-	List<Instance> findByInstanceidIn(ArrayList<Integer> instanceiList);
+	List<Instance> findByInstanceidIn(ArrayList<Integer> instanceidList);
 
 }

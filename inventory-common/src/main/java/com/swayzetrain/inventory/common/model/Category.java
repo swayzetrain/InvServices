@@ -93,6 +93,11 @@ public class Category {
 		this.datemodified = datemodified;
 	}
 	
+	public Category() {
+		
+		
+	}
+	
 	public Category(String categoryname, Integer instanceid, Integer creationuserid, Timestamp datecreated, Timestamp datemodified) {
 		
 		this.categoryname = categoryname;

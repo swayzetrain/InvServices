@@ -92,6 +92,20 @@ public class Instance {
 		this.datemodified = datemodified;
 	}
 	
+	public Instance() {
+		
+	}
+	
+	public Instance(String instanceName, String instanceDescription, Integer creationUserId, Timestamp dateCreated, Timestamp dateModified) {
+		
+		this.instancename = instanceName;
+		this.instancedescription = instanceDescription;
+		this.creationuserid = creationUserId;
+		this.datecreated = dateCreated;
+		this.datemodified = dateModified;
+		
+	}
+	
 	public interface New {
 		
 	}

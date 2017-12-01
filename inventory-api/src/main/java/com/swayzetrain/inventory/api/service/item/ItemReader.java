@@ -24,27 +24,58 @@ public class ItemReader {
 		
 		ArrayList<Item> itemList = new ArrayList<Item>();
 		
-		if(null != itemId) {
+		if(null != itemId && null == itemName && null == categoryId) {
 			
 			itemList.add(itemRepository.findByItemidAndInstanceid(itemId, userAuthorizationDetails.getInstanceid()));
 			
 		}
 		
-		else if(null != itemName && null != categoryId) {
+		else if(null == itemId && null == itemName && null == categoryId) {
 			
-			itemList = itemRepository.findByItemnameAndCategoryidAndInstanceid(itemName, categoryId, userAuthorizationDetails.getInstanceid());
+			itemList = itemRepository.findByInstanceid(userAuthorizationDetails.getInstanceid());
 			
 		}
 		
-		else if(null != itemName) {
+		else if(null != itemName && null == itemId && null == categoryId) {
 			
 			itemList = itemRepository.findByItemnameAndInstanceid(itemName, userAuthorizationDetails.getInstanceid());
 			
 		}
 		
-		else if(null != categoryId) {
+		else if(null != categoryId && null == itemId && null == itemName) {
 			
 			itemList = itemRepository.findByCategoryidAndInstanceid(categoryId, userAuthorizationDetails.getInstanceid());
+			
+		}
+		
+		else if(null != itemName && null != categoryId && null == itemId) {
+			
+			itemList = itemRepository.findByItemnameAndCategoryidAndInstanceid(itemName, categoryId, userAuthorizationDetails.getInstanceid());
+			
+		}
+		
+		else if(null != itemId && null != itemName && null != categoryId) {
+			
+			itemList.add(itemRepository.findByItemidAndItemnameAndCategoryidAndInstanceid(itemId, itemName, categoryId, userAuthorizationDetails.getInstanceid()));
+			
+		}
+		
+		else if(null != itemId && null != itemName && null == categoryId) {
+			
+			itemList.add(itemRepository.findByItemidAndItemnameAndInstanceid(itemId, itemName, userAuthorizationDetails.getInstanceid()));
+			
+		}
+		
+		else if(null != itemId && null == itemName && null != categoryId) {
+			
+			itemList.add(itemRepository.findByItemidAndCategoryidAndInstanceid(itemId, categoryId, userAuthorizationDetails.getInstanceid()));
+			
+		}
+		
+		else {
+			
+			MessageResponse messageResponse = new MessageResponse(Constants.MESSAGE, Constants.ITEM_500_ERROR_MESSAGE, MediaType.APPLICATION_JSON, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(messageResponse.getJsonObject().toString(), messageResponse.getHttpHeader(), messageResponse.getHttpStatus());
 			
 		}
 		

@@ -92,6 +92,20 @@ public class User {
 		this.enabled = enabled;
 	}
 	
+	public User() {
+		
+	}
+	
+	public User(String username, String password, Timestamp dateCreated, Timestamp dateModified, Boolean enabled) {
+		
+		this.username = username;
+		this.password = password;
+		this.datecreated = dateCreated;
+		this.datemodified = dateModified;
+		this.enabled = enabled;
+		
+	}
+	
 	public interface New {
 		
 	}

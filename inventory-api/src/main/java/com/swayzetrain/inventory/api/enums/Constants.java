@@ -4,6 +4,7 @@ public class Constants {
 
 	public static String MESSAGE = "message";
 	public static String ITEM_NOT_FOUND_MESSAGE = "item does not exist";
+	public static String ITEM_500_ERROR_MESSAGE = "there was an issue processing you item request";
 	public static String CATEGORY_NOT_FOUND_MESSAGE = "category does not exist";
 	public static String QUANTITY_NOT_FOUND_MESSAGE = "quantity does not exist";
 	public static String USER_NOT_FOUND_MESSAGE = "user does not exist";

@@ -82,6 +82,19 @@ public class Quantity {
 		this.datemodified = dateModified;
 	}
 	
+	public Quantity() {
+		
+	}
+	
+	public Quantity(Integer itemId, Integer quantity, String quantityType, Timestamp dateModified) {
+		
+		this.itemid = itemId;
+		this.quantity = quantity;
+		this.quantitytype = quantityType;
+		this.datemodified = dateModified;
+		
+	}
+	
 	public interface New {
 		
 	}

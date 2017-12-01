@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CommonService {
+	
+	public CommonService() {
+		
+	}
 
 	public Timestamp setTimestamp() {
 	
